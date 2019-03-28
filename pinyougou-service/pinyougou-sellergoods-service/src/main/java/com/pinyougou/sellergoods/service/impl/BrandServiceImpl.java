@@ -21,12 +21,16 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public List<Brand> findAll() {
-        PageInfo<Brand> pageInfo = PageHelper.startPage(1, 10).doSelectPageInfo(new ISelect() {
-            @Override
-            public void doSelect() {
-                bm.selectAll();
-            }
-        });
-        return pageInfo.getList();
+        return bm.selectAll();
+    }
+
+    @Override
+    public void save(Brand brand) {
+        bm.insertSelective(brand);
+    }
+
+    @Override
+    public void update(Brand brand) {
+        bm.updateByPrimaryKeySelective(brand);
     }
 }
