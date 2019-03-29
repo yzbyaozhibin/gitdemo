@@ -13,89 +13,10 @@
     <!--导入angular框架-->
     <script src="/plugins/angularjs/angular.min.js"></script>
     <script src="/plugins/angularjs/pagination.js"></script>
-    <script type="text/javascript">
-        var app = angular.module("pinyougou", ['pagination']);
-        app.controller("brandController", function ($scope, $http) {
-
-            $scope.paginationConf = {
-                currentPage: 1,
-                totalItems: 100,
-                itemsPerPage: 10,
-                perPageOptions: [10, 15, 20, 30, 50],
-                onChange: function () {
-                    $scope.findByPage();
-                }
-            };
-
-
-            // 查询分页数据
-            $scope.findByPage = function () {
-                $http.get("/brand/findByPage?page=" + $scope.paginationConf.currentPage +
-                    "&rows=" + $scope.paginationConf.itemsPerPage, {
-                    params: {
-                        name: $scope.name,
-                        firstChar: $scope.firstChar
-                    }
-                }).then(function (response) {
-                    $scope.paginationConf.totalItems = response.data.total;
-                    $scope.dataList = response.data.rows;
-                })
-            };
-
-            // 添加或者更新
-            $scope.saveOrUpdate = function () {
-
-                var url = "save";
-
-                if ($scope.entity.id) {
-                    url = "update";
-                }
-
-                $http.post("/brand/" + url, $scope.entity).then(function (value) {
-                    if (value.data) {
-                        $scope.findByPage();
-                    } else {
-                        alert("添加失败");
-                    }
-                })
-            };
-
-            $scope.show = function (entity) {
-                $scope.entity = JSON.parse(JSON.stringify(entity));
-            };
-
-            $scope.ids = [];
-
-            // 保存要删除的id
-            $scope.setIds = function ($event,id) {
-                if ($event.target.checked) {
-                    $scope.ids.push(id);
-                } else {
-                    $scope.ids.splice($scope.ids.indexOf(id),1);
-                }
-            };
-
-            // 通过id数组删除数据
-            $scope.deleteByIds = function () {
-
-                if($scope.ids.length == 0) {
-                    alert("请选择要删除的数据!");
-                    return;
-                }
-
-                if(confirm("确定要删除这些数据吗?")) {
-                    $http.post("/brand/delete",$scope.ids).then(function (value) {
-                        if(value.data) {
-                            $scope.findByPage();
-                            $scope.ids=[];
-                        } else {
-                            alert("删除失败");
-                        }
-                    })
-                }
-            }
-        })
-    </script>
+    <script src="/js/base-pagination.js"></script>
+    <script src="/js/service/baseService.js"></script>
+    <script src="/js/controller/baseController.js"></script>
+    <script src="/js/controller/brandController.js" type="text/javascript"></script>
 </head>
 <body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="brandController">
 <!-- .box-body -->
@@ -125,9 +46,9 @@
                 <!--  查询条件区-->
                 <table>
                     <tr>
-                        <td><input class="form-control" placeholder="品牌名称" ng-model="name">
+                        <td><input class="form-control" placeholder="品牌名称" ng-model="data.name">
                         </td>
-                        <td><input class="form-control" placeholder="首字母" ng-model="firstChar">
+                        <td><input class="form-control" placeholder="首字母" ng-model="data.firstChar">
                         </td>
                         <td>
                             <button type="button" class="btn btn-default" ng-click="findByPage()">

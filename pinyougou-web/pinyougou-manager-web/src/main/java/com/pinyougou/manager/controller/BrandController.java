@@ -52,8 +52,8 @@ public class BrandController {
         return false;
     }
 
-    @PostMapping("/delete")
-    public boolean delete(@RequestBody Long[] ids) {
+    @GetMapping("/delete")
+    public boolean delete(Long[] ids) {
         try {
             brandService.delete(ids);
             return true;
