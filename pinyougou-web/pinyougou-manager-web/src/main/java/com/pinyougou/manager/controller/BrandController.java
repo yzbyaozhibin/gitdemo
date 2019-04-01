@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/brand")
@@ -21,13 +22,13 @@ public class BrandController {
     @GetMapping("/findByPage")
     public PageResult findByPage(Brand brand, Integer page, Integer rows) {
         try {
-            if (StringUtils.isNoneBlank(brand.getName())){
-                brand.setName(new String(brand.getName().getBytes("ISO8859-1"),"utf-8"));
+            if (StringUtils.isNoneBlank(brand.getName())) {
+                brand.setName(new String(brand.getName().getBytes("ISO8859-1"), "utf-8"));
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-            return brandService.findByPage(brand, page, rows);
+        return brandService.findByPage(brand, page, rows);
     }
 
     @PostMapping("/save")
@@ -61,5 +62,10 @@ public class BrandController {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @GetMapping("/findBrandList")
+    public List<Map<String,Object>> findBrandList() {
+        return brandService.findBrandList();
     }
 }

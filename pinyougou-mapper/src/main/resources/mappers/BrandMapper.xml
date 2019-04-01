@@ -22,4 +22,8 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="findBrandList" resultType="java.util.Map">
+        select id, name as text from tb_brand;
+    </select>
 </mapper>

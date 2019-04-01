@@ -4,6 +4,8 @@ import tk.mybatis.mapper.common.Mapper;
 
 import com.pinyougou.pojo.ItemCat;
 
+import java.util.List;
+
 /**
  * ItemCatMapper 数据访问接口
  * @date 2019-03-28 15:41:54
@@ -12,5 +14,5 @@ import com.pinyougou.pojo.ItemCat;
 public interface ItemCatMapper extends Mapper<ItemCat>{
 
 
-
+    List<ItemCat> findByParentId(Integer parentId);
 }

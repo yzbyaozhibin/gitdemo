@@ -4,7 +4,9 @@ import tk.mybatis.mapper.common.Mapper;
 
 import com.pinyougou.pojo.Brand;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * BrandMapper 数据访问接口
@@ -15,5 +17,8 @@ public interface BrandMapper extends Mapper<Brand>{
 
     List<Brand> findAll(Brand brand);
 
-    void deleteByIds(Long[] ids);
+    void deleteByIds(Serializable[] ids);
+
+    List<Map<String,Object>> findBrandList();
+
 }

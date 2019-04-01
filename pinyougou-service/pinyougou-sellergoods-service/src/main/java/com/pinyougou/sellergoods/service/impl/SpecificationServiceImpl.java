@@ -5,9 +5,9 @@ import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pinyougou.common.pojo.PageResult;
-import com.pinyougou.mapper.BrandMapper;
-import com.pinyougou.pojo.Brand;
-import com.pinyougou.service.BrandService;
+import com.pinyougou.mapper.SpecificationMapper;
+import com.pinyougou.pojo.Specification;
+import com.pinyougou.service.SpecificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,31 +15,36 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-@Service(interfaceName = "com.pinyougou.service.BrandService")
+@Service(interfaceName = "com.pinyougou.service.SpecificationService")
 @Transactional
-public class BrandServiceImpl implements BrandService {
+public class SpecificationServiceImpl implements SpecificationService{
 
     @Autowired
-    private BrandMapper brandMapper;
+    private SpecificationMapper specMapper;
 
 
     @Override
-    public void save(Brand brand) {
-        brandMapper.insertSelective(brand);
-    }
-
-    @Override
-    public void update(Brand brand) {
-        brandMapper.updateByPrimaryKeySelective(brand);
-    }
-
-    @Override
-    public PageResult findByPage(Brand brand,Integer page, Integer rows) {
+    public void save(Specification spec) {
         try {
-            PageInfo<Brand> pageInfo = PageHelper.startPage(page, rows).doSelectPageInfo(new ISelect() {
+            specMapper.insertSelective(spec);
+            specMapper.saveOption(spec);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void update(Specification spec) {
+
+    }
+
+    @Override
+    public PageResult findByPage(Specification spec, Integer page, Integer rows) {
+        try {
+            PageInfo<Object> pageInfo = PageHelper.startPage(page, rows).doSelectPageInfo(new ISelect() {
                 @Override
                 public void doSelect() {
-                    brandMapper.findAll(brand);
+                    specMapper.findAll(spec);
                 }
             });
             return new PageResult(pageInfo.getTotal(),pageInfo.getList());
@@ -50,17 +55,13 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public void delete(Serializable[] ids) {
-        try {
-            brandMapper.deleteByIds(ids);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
     }
 
     @Override
-    public List<Map<String, Object>> findBrandList() {
+    public List<Map<String, Object>> findSpecList() {
         try {
-            return brandMapper.findBrandList();
+            return specMapper.findSpecList();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

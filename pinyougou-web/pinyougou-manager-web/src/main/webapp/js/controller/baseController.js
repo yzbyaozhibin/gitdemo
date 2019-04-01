@@ -2,7 +2,7 @@ app.controller("baseController",function ($scope) {
     //配置分页插件初始化数据
     $scope.paginationConf = {
         currentPage: 1,
-        totalItems: 100,
+        totalItems: 0,
         itemsPerPage: 10,
         perPageOptions: [10, 15, 20, 30, 50],
         onChange: function () {
@@ -26,4 +26,14 @@ app.controller("baseController",function ($scope) {
             $scope.ids.splice($scope.ids.indexOf(id),1);
         }
     };
+
+    $scope.jsonToStrArr = function (jsonArr,key) {
+        var strArr = JSON.parse(jsonArr);
+        var resArr = [];
+        for(var i = 0;i <= strArr.length - 1;i++) {
+            var json = strArr[i];
+            resArr.push(json[key]);
+        }
+        return resArr.join(",")
+    }
 });

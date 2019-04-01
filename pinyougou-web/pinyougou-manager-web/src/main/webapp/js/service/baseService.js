@@ -1,7 +1,14 @@
 app.service("baseService",function ($http) {
 
+    this.doGet = function (url) {
+        return $http.get(url);
+    };
+
     this.findByPage = function (url,data) {
-        return $http.get(url, {params: data});
+        if (data && JSON.stringify(data) != "{}") {
+            return $http.get(url, {params: data});
+        }
+        return this.doGet(url);
     };
 
     this.saveOrUpdate = function (url,entity) {
