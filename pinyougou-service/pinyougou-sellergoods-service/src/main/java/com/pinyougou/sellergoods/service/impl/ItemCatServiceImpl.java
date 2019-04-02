@@ -6,8 +6,11 @@ import com.pinyougou.pojo.ItemCat;
 import com.pinyougou.service.ItemCatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service(interfaceName = "com.pinyougou.service.ItemCatService")
@@ -19,22 +22,37 @@ public class ItemCatServiceImpl implements ItemCatService {
 
     @Override
     public void save(ItemCat itemCat) {
-
+        itemCatMapper.insertSelective(itemCat);
     }
 
     @Override
     public void update(ItemCat itemCat) {
-
+        itemCatMapper.updateByPrimaryKeySelective(itemCat);
     }
 
     @Override
     public void delete(Serializable id) {
-
     }
 
     @Override
-    public void deleteAll(Serializable[] ids) {
+    public void deleteAll(Long[] ids) {
+        List<Long> idsList = new ArrayList<>();
+        for (int i = 0; i < ids.length; i++) {
+            Long id = ids[i];
+            idsList.add(id);
+            getPreDelId(id, idsList);
+        }
+        itemCatMapper.deleteByIds(idsList);
+    }
 
+    private void getPreDelId(Long id, List<Long> ids) {
+        List<ItemCat> list = itemCatMapper.findByParentId(id);
+        if (list != null && list.size() != 0) {
+            for (ItemCat itemCat : list) {
+                ids.add(itemCat.getId());
+                getPreDelId(itemCat.getId(), ids);
+            }
+        }
     }
 
     @Override
@@ -53,7 +71,7 @@ public class ItemCatServiceImpl implements ItemCatService {
     }
 
     @Override
-    public List<ItemCat> findByParentId(Integer parentId) {
+    public List<ItemCat> findByParentId(Long parentId) {
         try {
             return itemCatMapper.findByParentId(parentId);
         } catch (Exception e) {

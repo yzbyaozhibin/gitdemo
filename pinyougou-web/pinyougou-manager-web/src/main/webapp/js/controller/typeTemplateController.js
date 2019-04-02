@@ -10,13 +10,10 @@ app.controller("typeTemplateController", function ($scope, baseService, $control
     };
 
     $scope.saveOrUpdate = function () {
-
         var url = "save";
-
         if ($scope.typeTemplate.id) {
             url = "update";
         }
-
         baseService.saveOrUpdate("/typeTemplate/" + url, $scope.typeTemplate).then(function (value) {
             if (value.data) {
                 $scope.findByPage();

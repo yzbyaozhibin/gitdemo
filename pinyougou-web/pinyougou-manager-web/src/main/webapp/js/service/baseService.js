@@ -4,9 +4,18 @@ app.service("baseService",function ($http) {
         return $http.get(url);
     };
 
+    this.doPost = function (url, data) {
+        if (data) {
+            return $http.post(url,data);
+        } else {
+            return $http.post(url);
+        }
+    };
+
     this.findByPage = function (url,data) {
-        if (data && JSON.stringify(data) != "{}") {
+        if (data) {
             return $http.get(url, {params: data});
+            // return $http.get(url+ "?" + data);
         }
         return this.doGet(url);
     };

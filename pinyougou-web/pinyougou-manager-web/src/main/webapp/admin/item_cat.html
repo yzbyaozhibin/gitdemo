@@ -17,7 +17,7 @@
 	    <script src="/js/controller/itemCatController.js"></script>
 	</head>
 
-	<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="itemCatController" ng-init="findByParentId(0);level=1">
+	<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="itemCatController" ng-init="findByParentId(0);level=0">
 		<!-- .box-body -->
 		<div class="box-header with-border">
 			<h3 class="box-title">商品分类管理</h3>
@@ -25,10 +25,11 @@
 
 		<div class="box-body">
 			<ol class="breadcrumb">
-				<li><a href="#" ng-click="level=1">顶级分类列表</a></li>
-				<li><a href="#" ng-click="level=2">珠宝</a></li>
-				<li><a href="#">银饰</a></li>
-			</ol>{{level}}
+				<li><a href="#" ng-click="showNexLevel(0,'',0)">顶级列表</a></li>
+				<li ng-repeat="lev in levelList">
+					<a href="#" ng-click="showNexLevel(lev.id,lev.name,$index+1)">{{lev.name}}</a>
+				</li>
+			</ol>
 	
 			<!-- 数据表格 -->
 			<div class="table-box">
@@ -38,10 +39,10 @@
 					<div class="form-group form-inline">
 						<div class="btn-group">
 							<button type="button" class="btn btn-default" title="新建"
-								data-toggle="modal" data-target="#editModal">
+								data-toggle="modal" data-target="#editModal" ng-click="entity={parentId:parentId}">
 								<i class="fa fa-file-o"></i> 新建
 							</button>
-							<button type="button" class="btn btn-default" title="删除">
+							<button type="button" class="btn btn-default" title="删除" ng-click="deleteByIds()">
 								<i class="fa fa-trash-o"></i> 删除
 							</button>
 							<button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();">
@@ -52,6 +53,7 @@
 					</div>
 				</div>
 				<br/>
+				{{parentId}}{{levelList}}{{level}}{{ids}}
 	
 				<!--数据列表-->
 				<table id="dataList"
@@ -69,14 +71,14 @@
 					</thead>
 					<tbody>
 						<tr ng-repeat="entity in dataList">
-							<td><input type="checkbox"></td>
+							<td><input type="checkbox" ng-click="setIds($event,entity.id)"></td>
 							<td>{{entity.id}}</td>
 							<td>{{entity.name}}</td>
 							<td>{{entity.typeId}}</td>
 							<td class="text-center">
-								<button type="button" class="btn bg-olive btn-xs" ng-click="showNexLevel(entity.id)" ng-if="level<3">查询下级</button>
+								<button type="button" class="btn bg-olive btn-xs" ng-click="showNexLevel(entity.id,entity.name)" ng-if="level<2">查询下级</button>
 								<button type="button" class="btn bg-olive btn-xs"
-									data-toggle="modal" data-target="#editModal">修改</button>
+									data-toggle="modal" data-target="#editModal" ng-click="show(entity)">修改</button>
 							</td>
 						</tr>
 					</tbody>
@@ -103,24 +105,25 @@
 						<tr>
 				      		<td>上级商品分类</td>
 				      		<td>
-				      		   珠宝 >>  银饰
+								{{changeToArr(levelList,'name')}}
 				      		</td>
 				      	</tr>
 				      	<tr>
-				      		<td>商品分类名称</td>
-				      		<td><input  class="form-control" placeholder="商品分类名称">  </td>
+				      		<td>商品分类名称</td>{{entity}}
+				      		<td><input  class="form-control" placeholder="商品分类名称" ng-model="entity.name" >  </td>
 				      	</tr>			  
 				      	<tr>
 				      		<td>类型模板</td>
 				      		<td>	      		
-				      			<input select2 config="options['type_template']" placeholder="商品类型模板" class="form-control" type="text"/>
+				      			<input select2 config="options['type_template']"
+									   placeholder="商品类型模板" class="form-control" type="text" ng-model="entity.typeId"/>
 				      		</td>		      		      		
 				      	</tr>		      	
 					 </table>				
 					
 				</div>
 				<div class="modal-footer">						
-					<button class="btn btn-success" data-dismiss="modal" aria-hidden="true">保存</button>
+					<button class="btn btn-success" data-dismiss="modal" aria-hidden="true" ng-click="saveOrUpdate()">保存</button>
 					<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
 				</div>
 			  </div>

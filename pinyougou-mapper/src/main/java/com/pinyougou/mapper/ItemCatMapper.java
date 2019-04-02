@@ -4,6 +4,7 @@ import tk.mybatis.mapper.common.Mapper;
 
 import com.pinyougou.pojo.ItemCat;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,5 +15,7 @@ import java.util.List;
 public interface ItemCatMapper extends Mapper<ItemCat>{
 
 
-    List<ItemCat> findByParentId(Integer parentId);
+    List<ItemCat> findByParentId(Long parentId);
+
+    void deleteByIds(List<Long> ids);
 }

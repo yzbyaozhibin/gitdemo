@@ -1,4 +1,4 @@
-app.controller("SpecController", function ($scope, baseService, $controller) {
+app.controller("specController", function ($scope, baseService, $controller) {
     $controller("baseController", {$scope: $scope});
 
     $scope.findByPage = function () {
