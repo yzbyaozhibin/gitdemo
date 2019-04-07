@@ -1,8 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.pinyougou.mapper.GoodsMapper">
+    <select id="findAll" resultType="map">
+        select id,goods_name as goodsName,price,is_marketable as isMarketable,
+        category1_id as category1Id,
+        category2_id as category2Id,
+        category3_id as category3Id,
+        audit_status as auditStatus from tb_goods
+        <where>
+            <if test="sellerId != null and sellerId != ''">
+                seller_id = #{sellerId}
+            </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                and audit_status = #{auditStatus}
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                and goods_name like concat('%', #{goodsName},'%')
+            </if>
+            and is_delete is null
+        </where>
+    </select>
 
+    <update id="updateStatus">
+        update tb_goods set ${column} = #{status} where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updateIsMarketable">
+        update tb_goods set is_marketable = #{isMarketable} where audit_status = '1' and id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

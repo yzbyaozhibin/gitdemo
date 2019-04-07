@@ -7,12 +7,24 @@ import com.pinyougou.service.TypeTemplateService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/typeTemplate")
 public class TypeTemplateController {
 
     @Reference(timeout = 10000)
     private TypeTemplateService typeTemplateService;
+
+    @GetMapping("/findTypeTemplateById")
+    public Map<String, Object> findTypeTemplateById(Long id) {
+        try {
+            return typeTemplateService.findTypeTemplateById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     @GetMapping("/findOne")
     public TypeTemplate findOne(Long id) {

@@ -43,7 +43,7 @@ public class UploadController {
             }
             System.out.println(url);
             data.put("status", 200);
-            data.put("url", url);
+            data.put("url", url.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }

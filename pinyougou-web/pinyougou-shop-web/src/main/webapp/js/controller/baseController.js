@@ -1,6 +1,6 @@
 /** 定义基础的控制器 */
 app.controller("baseController", function ($scope) {
-    $scope.paginationCof = {
+    $scope.paginationConf = {
         currentPage: 1,
         totalItems: 0,
         itemsPerPage: 10,
@@ -11,15 +11,16 @@ app.controller("baseController", function ($scope) {
     };
 
     $scope.reload = function () {
-        $scope.search("?page=" + $scope.paginationCof.currentPage,
-            "&rows=" + $scope.paginationCof.itemsPerPage)
+        $scope.search("?page=" + $scope.paginationConf.currentPage+"&rows=" + $scope.paginationConf.itemsPerPage)
     };
 
-    $scope.search = function (url,data) {
-        baseService.sendGet(url,data).then(function (value) {
-            $scope.paginationCof.totalItems = value.data.total;
-            $scope.dataList = value.data.rows;
-        })
+    $scope.ids = [];
+    $scope.setIds = function (event,id) {
+        if (event.target.checked) {
+            $scope.ids.push(id);
+        } else {
+            $scope.ids.splice($scope.ids.indexOf(id),1);
+        }
     }
 
 });

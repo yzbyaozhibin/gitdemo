@@ -19,8 +19,8 @@ app.controller("baseController",function ($scope) {
     // 保存要删除的id
     $scope.ids = [];
 
-    $scope.setIds = function ($event,id) {
-        if ($event.target.checked) {
+    $scope.setIds = function (event,id) {
+        if (event.target.checked) {
             $scope.ids.push(id);
         } else {
             $scope.ids.splice($scope.ids.indexOf(id),1);

@@ -1,20 +1,20 @@
-package com.pinyougou.shop.controller;
+package com.pinyougou.manager.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.common.pojo.PageResult;
 import com.pinyougou.pojo.Goods;
 import com.pinyougou.service.GoodsService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * GoodsController
  *
  * @version 1.0
- * @date 2019/4/3
+ * @date 2019/4/6
  */
-
 @RestController
 @RequestMapping("/goods")
 public class GoodsController {
@@ -22,36 +22,23 @@ public class GoodsController {
     @Reference(timeout = 10000)
     private GoodsService goodsService;
 
-    @PostMapping("/save")
-    public Boolean save(@RequestBody Goods goods) {
-        try {
-            goods.setSellerId(SecurityContextHolder.getContext().getAuthentication().getName());
-            goodsService.save(goods);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     @GetMapping("/findByPage")
     public PageResult findByPage(Goods goods, Integer page, Integer rows) {
         try {
-            if (StringUtils.isNoneBlank(goods.getGoodsName())) {
+            goods.setAuditStatus("0");
+            if (StringUtils.isNotBlank(goods.getGoodsName())) {
                 goods.setGoodsName(new String(goods.getGoodsName().getBytes("ISO8859-1"),"UTF-8"));
             }
-            String name = SecurityContextHolder.getContext().getAuthentication().getName();
-            goods.setSellerId(name);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return goodsService.findByPage(goods, page, rows);
     }
 
-    @GetMapping("/updateIsMarketable")
-    public Boolean updateIsMarketable(Long[] ids, String isMarketable) {
+    @GetMapping("/updateStatus")
+    public Boolean updateStatus(Long[] ids, String status) {
         try {
-            goodsService.updateIsMarketable(ids, isMarketable);
+            goodsService.updateStatus(ids, status);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

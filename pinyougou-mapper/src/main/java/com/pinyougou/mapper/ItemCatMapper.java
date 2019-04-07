@@ -18,4 +18,5 @@ public interface ItemCatMapper extends Mapper<ItemCat>{
     List<ItemCat> findByParentId(Long parentId);
 
     void deleteByIds(List<Long> ids);
+
 }

@@ -1,8 +1,9 @@
 package com.pinyougou.mapper;
 
+import com.pinyougou.pojo.Item;
 import tk.mybatis.mapper.common.Mapper;
 
-import com.pinyougou.pojo.Item;
+import java.util.List;
 
 /**
  * ItemMapper 数据访问接口
@@ -10,7 +11,5 @@ import com.pinyougou.pojo.Item;
  * @version 1.0
  */
 public interface ItemMapper extends Mapper<Item>{
-
-
 
 }
