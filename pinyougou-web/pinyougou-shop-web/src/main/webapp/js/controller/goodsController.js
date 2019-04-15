@@ -162,7 +162,6 @@ app.controller('goodsController', function ($scope, baseService, $controller) {
             baseService.sendGet("/goods/updateIsMarketable?ids=" + $scope.ids + "&isMarketable=" + status).then(function (value) {
                 if (value.data) {
                     $scope.reload();
-                    $scope.ids = [];
                 } else {
                     alert("操作失败!");
                 }

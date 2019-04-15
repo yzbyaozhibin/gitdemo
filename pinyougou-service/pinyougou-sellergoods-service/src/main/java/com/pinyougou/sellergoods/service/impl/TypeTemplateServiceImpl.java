@@ -13,7 +13,9 @@ import com.pinyougou.pojo.SpecificationOption;
 import com.pinyougou.pojo.TypeTemplate;
 import com.pinyougou.service.TypeTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,6 +32,9 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 
     @Autowired
     private SpecificationOptionMapper specificationOptionMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public void save(TypeTemplate typeTemplate) {
@@ -73,7 +78,10 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
                     typeTemplateMapper.findAll(typeTemplate);
                 }
             });
-            return new PageResult(pageInfo.getTotal(),pageInfo.getList());
+            //-------------
+            saveToRedis();
+            //-------------
+            return new PageResult(pageInfo.getTotal(), pageInfo.getList());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -85,8 +93,8 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
         try {
             TypeTemplate typeTemplate = typeTemplateMapper.selectByPrimaryKey(id);
             Map<String, Object> resMap = new HashMap<>();
-            resMap.put("brandIds",typeTemplate.getBrandIds());
-            resMap.put("customAttributeItems",typeTemplate.getCustomAttributeItems());
+            resMap.put("brandIds", typeTemplate.getBrandIds());
+            resMap.put("customAttributeItems", typeTemplate.getCustomAttributeItems());
             //specIds [{"id":27,"text":"网络"},{"id":32,"text":"机身内存"}]
             List<Map> maps = JSON.parseArray(typeTemplate.getSpecIds(), Map.class);
             for (Map map : maps) {
@@ -96,9 +104,44 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
                 map.put("options", options);
             }
             resMap.put("specOptions", maps);
+            //-------------
+            saveToRedis();
+            //-------------
             return resMap;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void saveToRedis() {
+        List<TypeTemplate> typeTemplates = typeTemplateMapper.selectAll();
+        for (TypeTemplate typeTemplate : typeTemplates) {
+            redisTemplate.boundHashOps("brandList").put(typeTemplate.getId(),
+                    JSON.parseArray(typeTemplate.getBrandIds(), Map.class));
+            List<Map> specIds = JSON.parseArray(typeTemplate.getSpecIds(), Map.class);
+            if (specIds != null && specIds.size() > 0) {
+                List<Map> specList = findSpecList(specIds);
+                redisTemplate.boundHashOps("specList").put(typeTemplate.getId(),specList);
+            }
+        }
+    }
+
+    private List<Map> findSpecList(List<Map> specIds) {
+        List<Map> specList = new ArrayList<>();
+        for (Map spec : specIds) {
+            Map<String, Object> map = new HashMap<>();
+
+            Example example = new Example(SpecificationOption.class);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("specId", spec.get("id"));
+            List<SpecificationOption> specOptionList =
+                    specificationOptionMapper.selectByExample(example);
+
+            map.put("id",spec.get("id"));
+            map.put("specName", spec.get("text"));
+            map.put("specOptionList", specOptionList);
+            specList.add(map);
+        }
+        return specList;
     }
 }

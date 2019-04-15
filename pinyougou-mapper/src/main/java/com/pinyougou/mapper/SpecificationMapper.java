@@ -4,6 +4,7 @@ import tk.mybatis.mapper.common.Mapper;
 
 import com.pinyougou.pojo.Specification;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -20,4 +21,6 @@ public interface SpecificationMapper extends Mapper<Specification>{
     void saveOption(Specification spec);
 
     List<Map<String,Object>> findSpecList();
+
+    void deleteAll(Serializable[] ids);
 }

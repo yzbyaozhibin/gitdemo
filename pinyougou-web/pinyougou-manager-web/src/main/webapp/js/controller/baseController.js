@@ -35,5 +35,18 @@ app.controller("baseController",function ($scope) {
             resArr.push(json[key]);
         }
         return resArr.join(",")
+    };
+
+    $scope.setAllIds = function (event) {
+        if (event.target.checked) {
+            $scope.ids = [];
+            for (var i = 0; i < $scope.dataList.length; i++) {
+                $scope.ids.push($scope.dataList[i].id);
+            }
+            $scope.checkStatus = 1;
+        } else {
+            $scope.ids=[];
+            $scope.checkStatus = 0;
+        }
     }
 });

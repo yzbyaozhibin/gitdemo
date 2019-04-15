@@ -12,6 +12,7 @@ import com.pinyougou.pojo.*;
 import com.pinyougou.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import java.io.Serializable;
 import java.util.*;
@@ -198,4 +199,46 @@ public class GoodsServiceImpl implements GoodsService {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public Map<String, Object> getGoodsByGoodsId(Long goodsId) {
+        Map<String, Object> dataModel = new HashMap<>();
+        Goods goods = goodsMapper.selectByPrimaryKey(goodsId);
+        GoodsDesc goodsDesc = goodsDescMapper.selectByPrimaryKey(goodsId);
+        //获得3级分类名
+        if (goods.getCategory1Id() != null) {
+            ItemCat itemCat = itemCatMapper.selectByPrimaryKey(goods.getCategory1Id());
+            dataModel.put("itemCat1", itemCat.getName());
+        }
+        if (goods.getCategory2Id() != null) {
+            ItemCat itemCat = itemCatMapper.selectByPrimaryKey(goods.getCategory2Id());
+            dataModel.put("itemCat2", itemCat.getName());
+        }
+        if (goods.getCategory3Id() != null) {
+            ItemCat itemCat = itemCatMapper.selectByPrimaryKey(goods.getCategory3Id());
+            dataModel.put("itemCat3", itemCat.getName());
+        }
+
+        //根据spuId获得所有sku
+        Example example = new Example(Item.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("goodsId",goods.getId());
+        example.orderBy("isDefault").desc();
+        //----------------
+        List<Item> items = itemMapper.selectByExample(example);
+        dataModel.put("itemList",JSON.toJSONString(items));
+        //----------------
+        dataModel.put("goods",goods);
+        dataModel.put("goodsDesc",goodsDesc);
+        return dataModel;
+    }
+
+    @Override
+    public List<Item> findItemByIds(Long[] ids) {
+        Example example = new Example(Item.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andIn("goodsId",Arrays.asList(ids));
+        return itemMapper.selectByExample(example);
+    }
+
 }

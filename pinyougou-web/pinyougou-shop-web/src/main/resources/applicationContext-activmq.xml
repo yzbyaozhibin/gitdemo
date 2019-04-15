@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--通用配置,配置连接工厂-->
+    <context:property-placeholder location="classpath:activemq.properties"/>
+
+    <bean id="activeMQConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="${brokerURL}"/>
+    </bean>
+    <bean id="singleConnectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+        <property name="targetConnectionFactory" ref="activeMQConnectionFactory"/>
+    </bean>
+    <!--配置生产者-->
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="singleConnectionFactory"/>
+        <property name="defaultDestination" ref="addSolrQueue"/>
+    </bean>
+    <bean id="addSolrQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="add.solr.queue"/>
+    </bean>
+    <bean id="delSolrQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="del.solr.queue"/>
+    </bean>
+    <bean id="addPageTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="add.page.topic"/>
+    </bean>
+    <bean id="delPageTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="del.page.topic"/>
+    </bean>
+
+</beans>

@@ -47,4 +47,15 @@ public class SpecificationController {
         return specService.findSpecList();
     }
 
+    @GetMapping("/delete")
+    public boolean delete(Long[] ids) {
+        try {
+            specService.delete(ids);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

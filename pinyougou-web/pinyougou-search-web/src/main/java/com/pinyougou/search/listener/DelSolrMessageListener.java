@@ -1,0 +1,29 @@
+package com.pinyougou.search.listener;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.pinyougou.service.GoodsService;
+import com.pinyougou.service.ItemSearchService;
+import org.springframework.jms.listener.SessionAwareMessageListener;
+
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+import java.io.Serializable;
+
+/**
+ * 删除索引的监听器
+ *
+ * @version 1.0
+ * @date 2019/4/13
+ */
+public class DelSolrMessageListener implements SessionAwareMessageListener<ObjectMessage> {
+
+    @Reference(timeout = 10000)
+    private ItemSearchService itemSearchService;
+
+    @Override
+    public void onMessage(ObjectMessage objectMessage, Session session) throws JMSException {
+        Long[] ids = (Long[]) objectMessage.getObject();
+        itemSearchService.delSolrItem(ids);
+    }
+}

@@ -6,6 +6,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pinyougou.common.pojo.PageResult;
 import com.pinyougou.mapper.SpecificationMapper;
+import com.pinyougou.mapper.SpecificationOptionMapper;
 import com.pinyougou.pojo.Specification;
 import com.pinyougou.service.SpecificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class SpecificationServiceImpl implements SpecificationService{
     @Autowired
     private SpecificationMapper specMapper;
 
+    @Autowired
+    private SpecificationOptionMapper specificationOptionMapper;
 
     @Override
     public void save(Specification spec) {
@@ -55,7 +58,12 @@ public class SpecificationServiceImpl implements SpecificationService{
 
     @Override
     public void delete(Serializable[] ids) {
-
+        try {
+            specMapper.deleteAll(ids);
+            specificationOptionMapper.deleteBySpecId(ids);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

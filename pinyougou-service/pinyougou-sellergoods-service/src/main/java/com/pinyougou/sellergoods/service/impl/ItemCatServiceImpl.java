@@ -5,6 +5,7 @@ import com.pinyougou.mapper.ItemCatMapper;
 import com.pinyougou.pojo.ItemCat;
 import com.pinyougou.service.ItemCatService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
@@ -19,6 +20,9 @@ public class ItemCatServiceImpl implements ItemCatService {
 
     @Autowired
     private ItemCatMapper itemCatMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public void save(ItemCat itemCat) {
@@ -73,9 +77,17 @@ public class ItemCatServiceImpl implements ItemCatService {
     @Override
     public List<ItemCat> findByParentId(Long parentId) {
         try {
+            saveToRedis();
             return itemCatMapper.findByParentId(parentId);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void saveToRedis() {
+        List<ItemCat> itemCats = itemCatMapper.selectAll();
+        for (ItemCat itemCat : itemCats) {
+            redisTemplate.boundHashOps("categoryList").put(itemCat.getName(),itemCat.getTypeId());
         }
     }
 }

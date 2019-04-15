@@ -31,4 +31,5 @@ public interface SpecificationOptionService {
 	/** 多条件分页查询 */
 	List<SpecificationOption> findByPage(SpecificationOption specificationOption, int page, int rows);
 
+    List<SpecificationOption> findBySpecId(Long specId);
 }

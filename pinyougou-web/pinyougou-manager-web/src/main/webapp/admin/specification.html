@@ -8,9 +8,10 @@
     <link rel="stylesheet" href="/plugins/adminLTE/css/AdminLTE.css"/>
     <link rel="stylesheet" href="/plugins/adminLTE/css/skins/_all-skins.min.css"/>
     <link rel="stylesheet" href="/css/style.css"/>
-	<link rel="stylesheet" href="/plugins/angularjs/pagination.css"/>
 	<script src="/plugins/jQuery/jquery-2.2.3.min.js"></script>
     <script src="/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" href="/plugins/angularjs/pagination.css"/>
     <script src="/plugins/angularjs/angular.min.js"></script>
     <script src="/plugins/angularjs/pagination.js"></script>
     <script src="/js/base-pagination.js"></script>
@@ -33,10 +34,10 @@
 				<div class="form-group form-inline">
 					<div class="btn-group">
 						<button type="button" class="btn btn-default" title="新建"
-							data-toggle="modal" data-target="#editModal" ng-click="specification={specificationOptions: []}">
+							data-toggle="modal" data-target="#editModal" ng-click="entity={specificationOptions: []}">
 							<i class="fa fa-file-o"></i> 新建
 						</button>
-						<button type="button" class="btn btn-default" title="删除">
+						<button type="button" ng-click="deleteByIds()" class="btn btn-default" title="删除">
 							<i class="fa fa-trash-o"></i> 删除
 						</button>
 
@@ -60,7 +61,7 @@
 				<thead>
 					<tr>
 						<th class="" style="padding-right: 0px"><input id="selall"
-							type="checkbox" class="icheckbox_square-blue"></th>
+							type="checkbox" ng-click="setAllIds($event)" class="icheckbox_square-blue"></th>
 						<th class="sorting_asc">规格ID</th>
 						<th class="sorting">规格名称</th>
 						<th class="text-center">操作</th>
@@ -68,12 +69,15 @@
 				</thead>
 				<tbody>
 					<tr ng-repeat="entity in dataList">
-						<td><input type="checkbox"></td>
+						<td><input type="checkbox"
+								   ng-click="setIds($event,entity.id)"
+								   ng-checked="checkStatus==1"
+						></td>
 						<td>{{entity.id}}</td>
 						<td>{{entity.specName}}</td>
 						<td class="text-center">
 							<button type="button" class="btn bg-olive btn-xs"
-								data-toggle="modal" data-target="#editModal">修改</button>
+								data-toggle="modal" ng-click="showSpec(entity)" data-target="#editModal">修改</button>
 						</td>
 					</tr>
 				</tbody>
@@ -95,7 +99,7 @@
 				<table class="table table-bordered table-striped"  width="800px">
 			      	<tr>
 			      		<td>规格名称</td>
-			      		<td><input  class="form-control" placeholder="规格名称" ng-model="specification.specName">  </td>
+			      		<td><input  class="form-control" placeholder="规格名称" ng-model="entity.specName">  </td>
 			      	</tr>
 				 </table>				
 				 
@@ -114,15 +118,15 @@
 		                    </tr>	
 	                    </thead>
 	                    <tbody>
-	                      <tr ng-repeat="entity in specification.specificationOptions">
+	                      <tr ng-repeat="so in entity.specificationOptions">
 					            <td>
-					            	<input  class="form-control" placeholder="规格选项" ng-model="entity.optionName">
+					            	<input  class="form-control" placeholder="规格选项" ng-model="so.optionName">
 					            </td>
 					            <td>
-					            	<input  class="form-control" placeholder="排序" ng-model="entity.order">
+					            	<input  class="form-control" placeholder="排序" ng-model="so.orders">
 					            </td>
 								<td>
-									<button type="button" class="btn btn-default" title="删除" ng-click="removeOption(entity)"><i class="fa fa-trash-o"></i> 删除</button>
+									<button type="button" class="btn btn-default" title="删除" ng-click="removeOption(so)"><i class="fa fa-trash-o"></i> 删除</button>
 								</td>
 	                      </tr>
 	                    </tbody>

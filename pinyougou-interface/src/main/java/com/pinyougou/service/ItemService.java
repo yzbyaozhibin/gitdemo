@@ -31,4 +31,5 @@ public interface ItemService {
 	/** 多条件分页查询 */
 	List<Item> findByPage(Item item, int page, int rows);
 
+    List<Item> findByIds(Long[] ids);
 }
