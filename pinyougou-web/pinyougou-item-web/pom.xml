@@ -31,5 +31,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-jms</artifactId>
         </dependency>
+        <!-- cas-client-core -->
+        <dependency>
+            <groupId>org.jasig.cas.client</groupId>
+            <artifactId>cas-client-core</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

@@ -1,5 +1,7 @@
 /** 定义搜索控制器 */
-app.controller("searchController", function ($scope, $sce, $location ,baseService) {
+app.controller("searchController", function ($scope, $controller, $sce, $location , baseService) {
+    $controller('baseController', {$scope:$scope});
+
     $scope.searchParams = {keywords: '', category: '', brand: '', spec: {}, price: '', page : 1, rows : 10, sortField:'', sortValue:''};
     $scope.search = function () {
         baseService.sendPost("/Search", $scope.searchParams).then(function (value) {

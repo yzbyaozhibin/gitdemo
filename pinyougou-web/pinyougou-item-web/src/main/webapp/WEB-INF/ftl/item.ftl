@@ -11,13 +11,15 @@
 
     <script src="/plugins/angularjs/angular.min.js"></script>
     <script src="/js/base.js"></script>
+    <script src="/js/service/baseService.js"></script>
+    <script src="/js/controller/baseController.js"></script>
     <script src="/js/controller/itemController.js"></script>
     <script type="text/javascript">
         var itemList = ${itemList};
     </script>
 </head>
 
-<body ng-app="pinyougou" ng-controller="itemController" ng-init="num=1;loadSku()">
+<body ng-app="pinyougou" ng-controller="itemController" ng-init="num=1;loadSku();showName()">
 
 <!--页面顶部 开始-->
 <#include 'header.ftl'/>
@@ -151,7 +153,7 @@
                             <div class="fl">
                                 <ul class="btn-choose unstyled">
                                     <li>
-                                        <a href="cart.html" target="_blank"
+                                        <a href="javascript:;" target="_blank"
                                            ng-click="addToCart()"
                                            class="sui-btn  btn-danger addshopcar">加入购物车</a>
                                     </li>

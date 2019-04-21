@@ -5,8 +5,10 @@
             <div class="py-container">
                 <div class="shortcut">
                     <ul class="fl">
-                        <li class="f-item">品优购欢迎您！</li>
-                        <li class="f-item">请<a href="login.html">登录</a><span>
+                        <li class="f-item" ng-if="username">{{username}}品优购欢迎您！&nbsp;
+                            <a href="http://sso.pinyougou.com/logout?service={{serverUrl}}">退出</a>
+                        </li>
+                        <li class="f-item" ng-if="!username">请<a href="http://sso.pinyougou.com/login?service={{serverUrl}}">登录</a><span>
 							<a href="http://user.pinyougou.com/register.html">免费注册</a></span></li>
                     </ul>
                     <ul class="fr">

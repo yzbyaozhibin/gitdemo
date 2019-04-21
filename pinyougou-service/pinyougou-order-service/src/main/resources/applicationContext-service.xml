@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <context:property-placeholder location="classpath*:props/*.properties"/>
+    <import resource="classpath:applicationContext-mapper.xml"/>
+    <import resource="classpath:applicationContext-redis.xml"/>
+
+    <bean id="idWorker" class="com.pinyougou.common.utils.IdWorker">
+        <constructor-arg name="workerId" value="0"/>
+        <constructor-arg name="datacenterId" value="0"/>
+    </bean>
+
+    <dubbo:application name="pinyougou-order-service"/>
+    <dubbo:registry protocol="zookeeper" address="192.168.12.131:2181"/>
+    <dubbo:protocol name="dubbo" port="20886"/>
+    <dubbo:annotation package="com.pinyougou.order.service.impl"/>
+</beans>
