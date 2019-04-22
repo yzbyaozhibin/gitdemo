@@ -4,17 +4,22 @@ import java.util.Date;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.pinyougou.cart.Cart;
+import com.pinyougou.common.utils.HttpClientUtils;
 import com.pinyougou.common.utils.IdWorker;
 import com.pinyougou.mapper.OrderItemMapper;
 import com.pinyougou.mapper.OrderMapper;
+import com.pinyougou.mapper.PayLogMapper;
 import com.pinyougou.pojo.Order;
 import com.pinyougou.pojo.OrderItem;
+import com.pinyougou.pojo.PayLog;
 import com.pinyougou.service.OrderService;
+import com.pinyougou.service.PayLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * OrderServiceImpl
@@ -35,6 +40,9 @@ public class OrderServiceImpl implements OrderService {
     private RedisTemplate redisTemplate;
 
     @Autowired
+    private PayLogMapper payLogMapper;
+
+    @Autowired
     private IdWorker idWorker;
 
     @Override
@@ -42,6 +50,8 @@ public class OrderServiceImpl implements OrderService {
         try {
             //从内存中获取购物车
             List<Cart> cartList = (List<Cart>) redisTemplate.boundValueOps("cart_" + order.getUserId()).get();
+            double totalFee = 0;
+            String orderList = "";
             for (Cart cart : cartList) {
                 Order order1 = new Order();
                 order1.setOrderId(idWorker.nextId());
@@ -66,6 +76,7 @@ public class OrderServiceImpl implements OrderService {
                 order1.setSourceType("2");
                 order1.setSellerId(cart.getSellerId());
                 double money = 0;
+                orderList += order1.getOrderId() + ",";
                 for (OrderItem orderItem : cart.getOrderItems()) {
                     OrderItem orderItem1 = new OrderItem();
                     orderItem1.setId(idWorker.nextId());
@@ -79,11 +90,29 @@ public class OrderServiceImpl implements OrderService {
                     orderItem1.setPicPath(orderItem.getPicPath());
                     orderItem1.setSellerId(cart.getSellerId());
                     money += orderItem.getTotalFee().doubleValue();
+                    //
+                    totalFee += orderItem.getTotalFee().doubleValue();
+                    //
                     orderItemMapper.insertSelective(orderItem1);
                 }
                 order1.setPayment(new BigDecimal(money));
                 orderMapper.insertSelective(order1);
             }
+
+            //保存支付日志
+            PayLog payLog  = new PayLog();
+            payLog.setOutTradeNo(String.valueOf(idWorker.nextId()));
+            payLog.setCreateTime(new Date());
+            payLog.setTotalFee((long) (totalFee*100));
+            payLog.setUserId(order.getUserId());
+            payLog.setTradeState("0");
+            payLog.setOrderList(orderList.substring(0,orderList.length()-1));
+            payLog.setPayType("1");
+            //
+            redisTemplate.boundValueOps("payLog_" + order.getUserId()).set(payLog);
+            //
+            payLogMapper.insertSelective(payLog);
+
             redisTemplate.delete("cart_" + order.getUserId());
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -119,4 +148,5 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> findByPage(Order order, int page, int rows) {
         return null;
     }
+
 }

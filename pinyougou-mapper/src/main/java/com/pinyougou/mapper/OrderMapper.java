@@ -12,5 +12,5 @@ import com.pinyougou.pojo.Order;
 public interface OrderMapper extends Mapper<Order>{
 
 
-
+    void updateStatusByIds(String[] orderIds);
 }

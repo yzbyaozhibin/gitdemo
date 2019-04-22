@@ -1,4 +1,4 @@
-app.controller("orderController", function ($scope, $controller, baseService) {
+app.controller("orderController", function ($scope, $controller, $interval, $location, baseService) {
     $controller('cartController', {$scope:$scope});
 
     $scope.order = {paymentType:'1'};
@@ -53,17 +53,33 @@ app.controller("orderController", function ($scope, $controller, baseService) {
     };
 
     $scope.genPayCode = function () {
-        baseService.sendGet("").then(function (value) {
-            $scope.outTranderNo = value.data.outTraderNo;
-            $scope.money = value.data.money;
+        baseService.sendGet("/order/genPayCode").then(function (value) {
+            $scope.outTradeNo = value.data.outTradeNo;
+            $scope.money = value.data.totalFee/100;
+            $scope.codeUrl = value.data.codeUrl;
+        });
 
-            var qr =  new Qriour({
-                element:document.getElementById("qrious"),
-                size:250,
-                level:'H',
-                value:value.data.codeUrl
+        var timer = $interval(function () {
+            baseService.sendGet("/order/getStatus?outTradeNo=" + $scope.outTradeNo).then(function (value) {
+                $scope.status = value.data.status;
+                if ($scope.status == "SUCCESS") {
+                    baseService.sendGet("/order/updatePayLog?transactionId=" + value.data.transactionId);
+                    $interval.cancel(timer);
+                    location.href = "/order/paysuccess.html?totalFee=" + $scope.money;
+                }
+                if ($scope.status == "PAYERROR") {
+                    location.href="/order/payfail.html";
+                }
             })
+        },10000,200);
+
+        timer.then(function () {
+            $scope.tips = "二维码已过期，刷新页面重新获取二维码。";
         })
+    };
+
+    $scope.getTotalFee = function () {
+        return $location.search().totalFee;
     }
 
 });

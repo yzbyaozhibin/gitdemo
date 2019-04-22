@@ -96,6 +96,9 @@ public class CartServiceImpl implements CartService {
     @Override
     public void addItemToCartByRedis(String username, Long itemId, Integer num) {
         List<Cart> cartList = findCartFromRedis(username);
+        if (cartList == null) {
+            cartList = new ArrayList<>();
+        }
         cartList = addItemToCart(cartList,itemId,num);
         redisTemplate.boundValueOps("cart_" + username).set(cartList);
     }
