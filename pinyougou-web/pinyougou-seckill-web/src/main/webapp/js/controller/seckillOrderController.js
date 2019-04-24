@@ -23,6 +23,7 @@ app.controller('seckillOrderController', function ($scope, $controller, $locatio
                         location.href = "/order/paysuccess.html";
                     }
                     if ($scope.status == "CLOSED") {
+                        $interval.cancel(timer);
                         $scope.codeStr = "二维码已过期,请刷新重新获取!";
                     }
                 })
