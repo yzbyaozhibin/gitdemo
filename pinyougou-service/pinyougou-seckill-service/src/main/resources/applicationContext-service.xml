@@ -10,6 +10,11 @@
     <import resource="classpath:applicationContext-mapper.xml"/>
     <import resource="classpath:applicationContext-redis.xml"/>
 
+    <bean id="idWorker" class="com.pinyougou.common.utils.IdWorker">
+        <constructor-arg name="datacenterId" value="0"/>
+        <constructor-arg name="workerId" value="0"/>
+    </bean>
+
     <dubbo:application name="pinyougou-seckill-service"/>
     <dubbo:registry protocol="zookeeper" address="192.168.12.131:2181"/>
     <duboo:protocol name="dubbo" port="20888"/>

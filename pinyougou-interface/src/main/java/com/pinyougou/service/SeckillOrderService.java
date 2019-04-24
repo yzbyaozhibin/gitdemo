@@ -10,8 +10,8 @@ import java.io.Serializable;
  */
 public interface SeckillOrderService {
 
-	/** 添加方法 */
-	void save(SeckillOrder seckillOrder);
+	/** 添加方法  */
+	void save();
 
 	/** 修改方法 */
 	void update(SeckillOrder seckillOrder);
@@ -31,4 +31,11 @@ public interface SeckillOrderService {
 	/** 多条件分页查询 */
 	List<SeckillOrder> findByPage(SeckillOrder seckillOrder, int page, int rows);
 
+	SeckillOrder saveToRedis(String userId, Long goodsId);
+
+    void saveSeckillOrder(String outTradeNo, String transactionId, String userId);
+
+    List<SeckillOrder> findCloseOrder();
+
+	void closeOrderFromRedis(String userId, Long seckillId);
 }

@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -42,6 +43,7 @@ public class BarCodeController {
 	
 	/** 生成二维码的方法 */
 	@GetMapping("/barcode")
+	@CrossOrigin(origins = "http://seckill.pinyougou.com/order/pay.html")
 	public void execute(@RequestParam(value="url", required=false)String url,
 				HttpServletResponse response) throws Exception{
 		/** 判断二维码中URL */

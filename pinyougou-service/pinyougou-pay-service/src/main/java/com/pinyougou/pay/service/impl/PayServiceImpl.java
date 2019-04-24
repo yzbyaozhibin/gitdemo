@@ -1,6 +1,7 @@
 package com.pinyougou.pay.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.pinyougou.common.utils.HttpClientUtils;
 import com.pinyougou.service.PayService;
@@ -32,6 +33,9 @@ public class PayServiceImpl implements PayService {
 
     @Value("${orderQuery}")
     private String orderQuery;
+
+    @Value("${closeorder}")
+    private String closeorder;
 
     @Override
     public Map<String, Object> genPayCode(String outTradeNo, String totalFee) {
@@ -82,6 +86,28 @@ public class PayServiceImpl implements PayService {
             map.put("status", resMap.get("trade_state"));
             map.put("transactionId",resMap.get("transaction_id"));
             return map;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Map<String, Object> closeOrder(String outTradeNo) {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("appid",appid);
+            params.put("mch_id",partner);
+            params.put("out_trade_no",outTradeNo);
+            params.put("nonce_str",WXPayUtil.generateNonceStr());
+
+            HttpClientUtils httpClientUtils = new HttpClientUtils(true);
+            String content = httpClientUtils.sendPost(closeorder, WXPayUtil.generateSignedXml(params, partnerkey));
+            Map<String, String> map = WXPayUtil.xmlToMap(content);
+
+            Map<String, Object> resMap = new HashMap<>();
+            resMap.put("resultCode",map.get("result_code").equals("SUCCESS")?"1":"0");
+
+            return resMap;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
