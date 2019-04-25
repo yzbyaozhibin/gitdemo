@@ -14,7 +14,7 @@ import java.util.Map;
 public interface OrderService {
 
 	/** 添加方法 */
-	void save(Order order);
+	Map<String, String> save(Order order, List<Cart> tempCartList);
 
 	/** 修改方法 */
 	void update(Order order);
@@ -34,5 +34,4 @@ public interface OrderService {
 	/** 多条件分页查询 */
 	List<Order> findByPage(Order order, int page, int rows);
 
-	void saveChoseCart(List<Cart> carts);
 }

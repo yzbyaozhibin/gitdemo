@@ -3,7 +3,7 @@ app.controller("cartController", function ($scope, $controller, baseService) {
     $controller("baseController",{$scope:$scope});
 
     //测试数据
-    $scope.choaseCart = [{sellerId:'admin',seller:'品优购',orderItems:[{
+    $scope.choseCart = [{sellerId:'admin',seller:'品优购',orderItems:[{
                     "goodsId": 149187842867996,
                     "itemId": 1369453,
                     "num": 1,
@@ -38,13 +38,13 @@ app.controller("cartController", function ($scope, $controller, baseService) {
         baseService.sendGet("/cart/findCart").then(function (value) {
             $scope.res = {total:0, totalPrice:0};
             $scope.cartList = value.data;
-            $scope.getTotal();
+            $scope.getTotal($scope.cartList);
         })
     };
 
-    $scope.getTotal = function () {
-        for (var i = 0; i < $scope.cartList.length; i++) {
-            var orderItems = $scope.cartList[i].orderItems;
+    $scope.getTotal = function (cartList) {
+        for (var i = 0; i < cartList.length; i++) {
+            var orderItems = cartList[i].orderItems;
             for (var j = 0; j < orderItems.length; j++) {
                 $scope.res.total += orderItems[j].num;
                 $scope.res.totalPrice += orderItems[j].totalFee;
@@ -64,14 +64,14 @@ app.controller("cartController", function ($scope, $controller, baseService) {
 
     //将选择的购物车从redis中复制一份,重新封装存入redis
     $scope.saveChoseCart  = function () {
-        location.href = "/order/getOrderInfo.html";
-        // baseService.sendPost("/order/saveChoseCart", $scope.choaseCart).then(function (value) {
-        //     if (value.data) {
-        //         location.href = "/order/getOrderInfo.html";
-        //     } else {
-        //         alert("结算失败!");
-        //     }
-        // })
+        // location.href = "/order/getOrderInfo.html";
+        baseService.sendPost("/cart/saveChoseCart", $scope.choseCart).then(function (value) {
+            if (value.data) {
+                location.href = "/order/getOrderInfo.html";
+            } else {
+                alert("结算失败!");
+            }
+        })
     }
 
 });

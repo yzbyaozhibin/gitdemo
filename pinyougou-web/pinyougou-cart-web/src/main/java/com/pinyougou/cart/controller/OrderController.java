@@ -1,6 +1,7 @@
 package com.pinyougou.cart.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.pinyougou.cart.Cart;
 import com.pinyougou.common.utils.IdWorker;
 import com.pinyougou.pojo.Address;
@@ -56,16 +57,21 @@ public class OrderController {
     }
 
     @PostMapping("/saveOrder")
-    public Boolean saveOrder(@RequestBody Order order) {
+    public Map<String, String> saveOrder(@RequestBody Map<String, Object> params) {
         try {
             String userId = request.getRemoteUser();
+            String orderStr = JSON.toJSONString(params.get("order"));
+            Order order = JSON.parseObject(orderStr, Order.class);
+            String tempCartListStr = JSON.toJSONString(params.get("tempCartList"));
+            List<Cart> tempCartList = JSON.parseArray(tempCartListStr, Cart.class);
             order.setUserId(userId);
-            orderService.save(order);
-            return true;
+            //map封装了订单的交易号
+            Map<String, String> map = orderService.save(order, tempCartList);
+            return map;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
     @PostMapping("/save")
@@ -95,10 +101,10 @@ public class OrderController {
     }
 
     @GetMapping("/genPayCode")
-    public Map<String, Object> genPayCode() {
+    public Map<String, Object> genPayCode(String outTradeNo) {
         try {
             String userId = request.getRemoteUser();
-            PayLog payLog = payLogService.findPayLogFromRedis(userId);
+            PayLog payLog = payLogService.findPayLogFromRedis(userId, outTradeNo);
             return payService.genPayCode(payLog.getOutTradeNo(), String.valueOf(payLog.getTotalFee()));
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,10 +124,10 @@ public class OrderController {
     }
 
     @GetMapping("/updatePayLog")
-    public Boolean updatePayLog(String transactionId) {
+    public Boolean updatePayLog(String outTradeNo, String transactionId) {
         try {
             String userId = request.getRemoteUser();
-            payLogService.updatePayLog(userId,transactionId);
+            payLogService.updatePayLog(userId, outTradeNo, transactionId);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,14 +135,4 @@ public class OrderController {
         return false;
     }
 
-    @PostMapping("/saveChoseCart")
-    public Boolean saveChoseCart(@RequestBody List<Cart> carts) {
-        try {
-            orderService.saveChoseCart(carts);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 }

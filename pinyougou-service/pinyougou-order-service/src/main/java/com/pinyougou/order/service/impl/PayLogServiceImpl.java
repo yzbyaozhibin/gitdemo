@@ -69,9 +69,16 @@ public class PayLogServiceImpl implements PayLogService {
     }
 
     @Override
-    public PayLog findPayLogFromRedis(String userId) {
+    public PayLog findPayLogFromRedis(String userId, String outTradeNo) {
+        //遍历获取
         try {
-            return  (PayLog) redisTemplate.boundValueOps("payLog_" + userId).get();
+            List<PayLog> payLogList = (List<PayLog>) redisTemplate.boundHashOps("payLog").get(userId);
+            for (PayLog payLog : payLogList) {
+                if (payLog.getOutTradeNo().equals(outTradeNo)) {
+                    return payLog;
+                }
+            }
+            return null;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -79,14 +86,13 @@ public class PayLogServiceImpl implements PayLogService {
     }
 
     @Override
-    public void updatePayLog(String userId, String transactionId) {
+    public void updatePayLog(String userId, String outTradeNo, String transactionId) {
         try {
-            PayLog payLog = (PayLog) redisTemplate.boundValueOps("payLog_" + userId).get();
+            PayLog payLog = (PayLog) redisTemplate.boundHashOps("payLog").get(userId);
             payLog.setPayTime(new Date());
             payLog.setTradeState("1");
             payLog.setTransactionId(transactionId);
             payLogMapper.updateByPrimaryKeySelective(payLog);
-
             String[] orderIds = payLog.getOrderList().split(",");
             for (String orderId : orderIds) {
                 Order order = new Order();
@@ -96,8 +102,7 @@ public class PayLogServiceImpl implements PayLogService {
                 order.setStatus("2");
                 orderMapper.updateByPrimaryKeySelective(order);
             }
-
-            redisTemplate.delete("payLog_" + payLog.getUserId());
+            redisTemplate.boundHashOps("payLog").delete(payLog.getUserId());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

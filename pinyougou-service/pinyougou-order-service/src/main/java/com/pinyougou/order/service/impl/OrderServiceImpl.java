@@ -1,6 +1,7 @@
 package com.pinyougou.order.service.impl;
+
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.*;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.pinyougou.cart.Cart;
@@ -16,10 +17,9 @@ import com.pinyougou.service.OrderService;
 import com.pinyougou.service.PayLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 /**
  * OrderServiceImpl
@@ -28,6 +28,7 @@ import java.util.Map;
  * @date 2019/4/20
  */
 @Service(interfaceName = "com.pinyougou.service.OrderService")
+@Transactional
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
@@ -46,33 +47,33 @@ public class OrderServiceImpl implements OrderService {
     private IdWorker idWorker;
 
     @Override
-    public void save(Order order) {
+    public Map<String,String> save(Order order, List<Cart> tempCartList) {
         try {
-            //从内存中获取购物车
-            List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps("cartList").get(order.getUserId());
+//            //从内存中获取购物车
+//            List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps("cartList").get(order.getUserId());
             double totalFee = 0;
             String orderList = "";
-            for (Cart cart : cartList) {
+            for (Cart cart : tempCartList) {
                 Order order1 = new Order();
                 order1.setOrderId(idWorker.nextId());
-    //            order1.setPayment(new BigDecimal("0"));
+                //            order1.setPayment(new BigDecimal("0"));
                 order1.setPaymentType(order.getPaymentType());
-    //            order1.setPostFee("");
+                //            order1.setPostFee("");
                 order1.setStatus("1");
                 order1.setCreateTime(new Date());
                 order1.setUpdateTime(order1.getCreateTime());
-    //            order1.setPaymentTime(new Date());
-    //            order1.setConsignTime(new Date());
-    //            order1.setEndTime(new Date());
-    //            order1.setCloseTime(new Date());
-    //            order1.setShippingName("");
-    //            order1.setShippingCode("");
+                //            order1.setPaymentTime(new Date());
+                //            order1.setConsignTime(new Date());
+                //            order1.setEndTime(new Date());
+                //            order1.setCloseTime(new Date());
+                //            order1.setShippingName("");
+                //            order1.setShippingCode("");
                 order1.setUserId(order.getUserId());
                 order1.setReceiverAreaName(order.getReceiverAreaName());
                 order1.setReceiverMobile(order.getReceiverMobile());
                 order1.setReceiver(order.getReceiver());
-    //            order1.setExpire(new Date().);
-    //            order1.setInvoiceType("");
+                //            order1.setExpire(new Date().);
+                //            order1.setInvoiceType("");
                 order1.setSourceType("2");
                 order1.setSellerId(cart.getSellerId());
                 double money = 0;
@@ -100,22 +101,71 @@ public class OrderServiceImpl implements OrderService {
             }
 
             //保存支付日志
-            PayLog payLog  = new PayLog();
+            PayLog payLog = new PayLog();
             payLog.setOutTradeNo(String.valueOf(idWorker.nextId()));
             payLog.setCreateTime(new Date());
-            payLog.setTotalFee((long) (totalFee*100));
+            payLog.setTotalFee((long) (totalFee * 100));
             payLog.setUserId(order.getUserId());
             payLog.setTradeState("0");
-            payLog.setOrderList(orderList.substring(0,orderList.length()-1));
+            payLog.setOrderList(orderList.substring(0, orderList.length() - 1));
             payLog.setPayType("1");
             //
-            redisTemplate.boundValueOps("payLog_" + order.getUserId()).set(payLog);
+            List<PayLog> payLogList = (List<PayLog>) redisTemplate.boundHashOps("payLog").get(order.getUserId());
+            if (payLogList == null) {
+                payLogList = new ArrayList<>();
+                payLogList.add(payLog);
+            }
+            payLogList.add(payLog);
+            redisTemplate.boundHashOps("payLog").put(order.getUserId(), payLogList);
             //
             payLogMapper.insertSelective(payLog);
+            String userId = order.getUserId();
+            //从购物车中移除下单后的数据
+            updateCartListByUserId(tempCartList, userId);
 
-            redisTemplate.boundHashOps("cartList").delete(order.getUserId());
+            Map<String, String> map = new HashMap<>();
+            map.put("outTradeNo", payLog.getOutTradeNo());
+            return map;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void updateCartListByUserId(List<Cart> tempCartList, String userId) {
+        List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps("cartList").get(userId);
+        if (cartList != null && cartList.size() > 0) {
+            for (Cart cart : cartList) {//单个商家对应的一个购物车
+                for (Cart cart1 : tempCartList) {
+                    if (cart.getSellerId().equals(cart1.getSellerId())) {
+                        if (cart.getOrderItems() != null && cart.getOrderItems().size() > 0) {
+                            //遍历单个商家的购物车,对相应的商品数量-1,
+                            //////////////////
+                            for (OrderItem orderItem : cart.getOrderItems()) {
+                                for (OrderItem orderItem1 : cart1.getOrderItems()) {
+                                    if (orderItem.getItemId().equals(orderItem1.getItemId())) {
+                                        Integer num = orderItem.getNum() - orderItem1.getNum();
+                                        if (num <= 0) {
+                                            cart.getOrderItems().remove(orderItem);
+                                        } else {
+                                            orderItem.setNum(num);
+                                        }
+                                    }
+                                }
+                            }
+                            //////////////////
+                        }
+                    }
+                }
+                if (cart.getOrderItems().size() <= 0) {
+                    cartList.remove(cart);
+                }
+            }
+            System.out.println(cartList);
+        }
+        if (cartList.size() <= 0) {
+            redisTemplate.boundHashOps("cartList").delete(userId);
+        } else {
+            redisTemplate.boundHashOps("cartList").put(userId, cartList);
         }
     }
 
@@ -147,11 +197,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> findByPage(Order order, int page, int rows) {
         return null;
-    }
-
-    @Override
-    public void saveChoseCart(List<Cart> carts) {
-//        redisTemplate.boundHashOps()
     }
 
 }

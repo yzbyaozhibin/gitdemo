@@ -73,34 +73,64 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<Cart> mergeCart(String userId, List<Cart> carts) {
-        List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps("cartList").get(userId);
-        if (cartList == null) {
-            cartList = new ArrayList<>();
-        }
-        if (carts != null && carts.size() > 0) {
-            for (Cart cart : carts) {
-                for (OrderItem orderItem : cart.getOrderItems()) {
-                    cartList = addItemToCart(cartList, orderItem.getItemId(), orderItem.getNum());
+        try {
+            List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps("cartList").get(userId);
+            if (cartList == null) {
+                cartList = new ArrayList<>();
+            }
+            if (carts != null && carts.size() > 0) {
+                for (Cart cart : carts) {
+                    for (OrderItem orderItem : cart.getOrderItems()) {
+                        cartList = addItemToCart(cartList, orderItem.getItemId(), orderItem.getNum());
+                    }
                 }
             }
+            redisTemplate.boundHashOps("cartList").put(userId,cartList);
+            return cartList;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        redisTemplate.boundHashOps("cartList").put(userId,cartList);
-        return cartList;
     }
 
     @Override
     public List<Cart> findCartFromRedis(String userId) {
-        return (List<Cart>) redisTemplate.boundHashOps("cartList").get(userId);
+        try {
+            return (List<Cart>) redisTemplate.boundHashOps("cartList").get(userId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void addItemToCartByRedis(String userId, Long itemId, Integer num) {
-        List<Cart> cartList = findCartFromRedis(userId);
-        if (cartList == null) {
-            cartList = new ArrayList<>();
+        try {
+            List<Cart> cartList = findCartFromRedis(userId);
+            if (cartList == null) {
+                cartList = new ArrayList<>();
+            }
+            cartList = addItemToCart(cartList,itemId,num);
+            redisTemplate.boundHashOps("cartList" ).put(userId,cartList);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        cartList = addItemToCart(cartList,itemId,num);
-        redisTemplate.boundHashOps("cartList" ).put(userId,cartList);
+    }
+
+    @Override
+    public void saveChoseCart(String userId,List<Cart> carts) {
+        try {
+            redisTemplate.boundHashOps("tempCartList").put(userId, carts);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Cart> findTempCart(String userId) {
+        try {
+            return (List<Cart>) redisTemplate.boundHashOps("tempCartList").get(userId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private OrderItem searchOrderItemByItemId(List<OrderItem> orderItems, Long itemId) {
@@ -115,27 +145,35 @@ public class CartServiceImpl implements CartService {
     }
 
     private Cart searchCartBySellerId(List<Cart> carts, String sellerId) {
-        if (carts != null && carts.size() > 0) {
-            for (Cart cart : carts) {
-                if (cart.getSellerId().equals(sellerId)) {
-                    return cart;
+        try {
+            if (carts != null && carts.size() > 0) {
+                for (Cart cart : carts) {
+                    if (cart.getSellerId().equals(sellerId)) {
+                        return cart;
+                    }
                 }
             }
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     private OrderItem itemToOrderItem(Item item, Integer num) {
-        OrderItem orderItem  = new OrderItem();
-        orderItem.setItemId(item.getId());
-        orderItem.setGoodsId(item.getGoodsId());
-        orderItem.setTitle(item.getTitle());
-        orderItem.setPrice(new BigDecimal(item.getPrice().doubleValue()));
-        orderItem.setNum(num);
-        orderItem.setTotalFee(new BigDecimal((item.getPrice().doubleValue())*num));
-        orderItem.setPicPath(item.getImage());
-        orderItem.setSellerId(item.getSellerId());
-        return orderItem;
+        try {
+            OrderItem orderItem  = new OrderItem();
+            orderItem.setItemId(item.getId());
+            orderItem.setGoodsId(item.getGoodsId());
+            orderItem.setTitle(item.getTitle());
+            orderItem.setPrice(new BigDecimal(item.getPrice().doubleValue()));
+            orderItem.setNum(num);
+            orderItem.setTotalFee(new BigDecimal((item.getPrice().doubleValue())*num));
+            orderItem.setPicPath(item.getImage());
+            orderItem.setSellerId(item.getSellerId());
+            return orderItem;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
