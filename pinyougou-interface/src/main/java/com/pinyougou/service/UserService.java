@@ -36,4 +36,5 @@ public interface UserService {
 	Boolean sendSms(String phone);
 
 	boolean checkSmsCode(String code);
+
 }

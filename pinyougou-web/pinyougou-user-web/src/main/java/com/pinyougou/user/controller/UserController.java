@@ -3,10 +3,14 @@ package com.pinyougou.user.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.common.pojo.PageResult;
 import com.pinyougou.pojo.PayLog;
+import com.pinyougou.pojo.Cities;
+import com.pinyougou.pojo.Provinces;
 import com.pinyougou.pojo.User;
 import com.pinyougou.service.OrderService;
 import com.pinyougou.service.PayLogService;
 import com.pinyougou.service.PayService;
+import com.pinyougou.service.CitiesService;
+import com.pinyougou.service.ProvincesService;
 import com.pinyougou.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,6 +35,10 @@ public class UserController {
 
     @Reference(timeout = 10000)
     private UserService userService;
+    @Reference(timeout = 10000)
+    private ProvincesService provincesService;
+    @Reference(timeout = 10000)
+    private CitiesService citiesService;
 
     @Reference(timeout = 10000)
     private OrderService orderService;
@@ -124,5 +132,16 @@ public class UserController {
         }
         return false;
     }
+
+    @GetMapping("/findProvinces")
+    public List<Provinces> findProvinces(){
+        return provincesService.findAll();
+    }
+
+    @GetMapping("/findCitiesByParentId")
+    public List<Cities> findCitiesByParentId(@RequestParam(value = "parentId") String parentId){
+        return citiesService.findCitiesByParentId(parentId);
+    }
+
 
 }
