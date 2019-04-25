@@ -7,9 +7,13 @@
     <link rel="stylesheet" type="text/css" href="/css/webbase.css"/>
     <link rel="stylesheet" type="text/css" href="/css/pages-seckillOrder.css"/>
     <script src="plugins/angularjs/angular.min.js"></script>
+    <script src="plugins/angularjs/pagination.js"></script>
+    <link rel="stylesheet" href="plugins/angularjs/pagination.css">
     <script src="js/base.js"></script>
     <script src="js/service/baseService.js"></script>
     <script src="js/controller/indexController.js"></script>
+
+
 
 </head>
 <body ng-app="pinyougou" ng-controller="indexController" ng-init="showUser()">
@@ -392,7 +396,8 @@ $(function(){
 
                                     </tbody>
                                 </table>
-
+                                <!--配置pagination插件-->
+                                <tm-pagination conf="paginationConf"/>
 
 
                             </div>
@@ -401,8 +406,6 @@ $(function(){
                                     <ul>
                                         <li class="prev disabled"><a href="#">«上一页</a></li>
                                         <li class="active"><a href="#">1</a></li>
-                                        <li><a href="#">2</a></li>
-                                        <li><a href="#">3</a></li>
                                         <li class="dotted"><span>...</span></li>
                                         <li class="next"><a href="#">下一页»</a></li>
                                     </ul>
