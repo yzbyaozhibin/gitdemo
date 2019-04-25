@@ -1,11 +1,16 @@
 package com.pinyougou.order.service.impl;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.*;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.github.pagehelper.ISelect;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.pinyougou.cart.Cart;
+import com.pinyougou.common.pojo.PageResult;
 import com.pinyougou.common.utils.HttpClientUtils;
 import com.pinyougou.common.utils.IdWorker;
+import com.pinyougou.mapper.ItemMapper;
 import com.pinyougou.mapper.OrderItemMapper;
 import com.pinyougou.mapper.OrderMapper;
 import com.pinyougou.mapper.PayLogMapper;
@@ -16,10 +21,9 @@ import com.pinyougou.service.OrderService;
 import com.pinyougou.service.PayLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import tk.mybatis.mapper.entity.Example;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 /**
  * OrderServiceImpl
@@ -149,4 +153,45 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
+    @Override
+    public PageResult getUserOrder(int page,int rows,String userId) {
+        try{
+            PageInfo<Order> pageInfo = PageHelper.startPage(page, rows).doSelectPageInfo(new ISelect() {
+                @Override
+                public void doSelect() {
+                    //2. 根据用户名获取订单信息
+                    //2.1 创建示范对象
+                    Example example = new Example(Order.class);
+                    //2.2 创建条件对象
+                    Example.Criteria criteria = example.createCriteria();
+                    //2.3 添加条件
+                    criteria.andEqualTo("userId", userId);
+                    example.orderBy("createTime").asc();
+                    List<Order> orders = orderMapper.selectByExample(example);
+                }
+            });
+            List<Order> orders = pageInfo.getList();
+            //1. 创建一个数组封装数据
+            List<Map<String,Object>> orderList= new ArrayList<>();
+            if(orders !=null && orders.size()>0){
+                //遍历获取订单详情
+                for (Order order : orders) {
+                    //创建一个Map集合封装订单信息
+                    Map<String,Object> orderMap=new HashMap<>();
+                    orderMap.put("order",order);
+                    //查询订单详情信息
+                    Example example1 = new Example(OrderItem.class);
+                    Example.Criteria criteria1 = example1.createCriteria();
+                    criteria1.andEqualTo("orderId",order.getOrderId());
+                    List<OrderItem> orderItems = orderItemMapper.selectByExample(example1);
+                    orderMap.put("orderItem",orderItems);
+                    orderList.add(orderMap);
+                }
+            }
+            return new PageResult(pageInfo.getTotal(),orderList);
+        }catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
+
+    }
 }

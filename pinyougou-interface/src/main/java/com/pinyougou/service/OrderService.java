@@ -1,5 +1,6 @@
 package com.pinyougou.service;
 
+import com.pinyougou.common.pojo.PageResult;
 import com.pinyougou.pojo.Order;
 import java.util.List;
 import java.io.Serializable;
@@ -33,4 +34,6 @@ public interface OrderService {
 	/** 多条件分页查询 */
 	List<Order> findByPage(Order order, int page, int rows);
 
+    /* 获取用户订单信息*/
+    PageResult getUserOrder(int page,int rows,String userId);
 }
