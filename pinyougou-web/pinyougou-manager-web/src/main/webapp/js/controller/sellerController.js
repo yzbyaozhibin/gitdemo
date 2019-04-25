@@ -2,13 +2,21 @@ app.controller("sellerController",function ($scope, baseService, $controller) {
 
     $controller("baseController", {$scope:$scope});
 
+    $scope.data = {status : '0'};
     $scope.findByPage = function () {
         baseService.findByPage("/seller/findByPage?page=" + $scope.paginationConf.currentPage +
-            "&rows=" + $scope.paginationConf.itemsPerPage + "&status=0",$scope.data).then(function (response) {
+            "&rows=" + $scope.paginationConf.itemsPerPage, $scope.data).then(function (response) {
             $scope.paginationConf.totalItems = response.data.total;
             $scope.dataList = response.data.rows;
-        })
+        });
     };
+
+    /** 商家管理 */
+    $scope.SelectSeller = function (status) {
+        $scope.data.status = status;
+        $scope.findByPage();
+    };
+
 
     $scope.updateStatus = function (status) {
         $scope.entity = {
@@ -22,5 +30,8 @@ app.controller("sellerController",function ($scope, baseService, $controller) {
                 alert("审核失败!");
             }
         })
-    }
+    };
+
+
+
 });
