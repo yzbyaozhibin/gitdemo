@@ -1,5 +1,6 @@
 package com.pinyougou.service;
 
+import com.pinyougou.cart.Cart;
 import com.pinyougou.pojo.Order;
 import java.util.List;
 import java.io.Serializable;
@@ -33,4 +34,5 @@ public interface OrderService {
 	/** 多条件分页查询 */
 	List<Order> findByPage(Order order, int page, int rows);
 
+	void saveChoseCart(List<Cart> carts);
 }

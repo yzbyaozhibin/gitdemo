@@ -1,6 +1,7 @@
 package com.pinyougou.cart.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.pinyougou.cart.Cart;
 import com.pinyougou.common.utils.IdWorker;
 import com.pinyougou.pojo.Address;
 import com.pinyougou.pojo.Order;
@@ -25,7 +26,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/order")
-public class AddressController {
+public class OrderController {
 
     @Autowired
     HttpServletRequest request;
@@ -121,6 +122,17 @@ public class AddressController {
         try {
             String userId = request.getRemoteUser();
             payLogService.updatePayLog(userId,transactionId);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @PostMapping("/saveChoseCart")
+    public Boolean saveChoseCart(@RequestBody List<Cart> carts) {
+        try {
+            orderService.saveChoseCart(carts);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

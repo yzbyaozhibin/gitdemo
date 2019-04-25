@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <title>结算页</title>
+    <base href="/"/>
     <link rel="stylesheet" type="text/css" href="/css/webbase.css"/>
     <link rel="stylesheet" type="text/css" href="/css/pages-getOrderInfo.css"/>
     <script src="/plugins/angularjs/angular.min.js"></script>
@@ -13,6 +14,11 @@
     <script src="/js/controller/orderController.js"></script>
     <script type="text/javascript">
         $filter('limitTo')(input, limit, begin);
+    </script>
+    <script type="text/javascript">
+        app.config(function ($locationProvider) {
+            $locationProvider.html5Mode(true);
+        })
     </script>
 </head>
 <body ng-app="pinyougou" ng-controller="orderController" ng-init="showName();showOrderInfo();">
