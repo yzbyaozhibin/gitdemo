@@ -64,13 +64,14 @@ app.controller("cartController", function ($scope, $controller, baseService) {
 
     //将选择的购物车从redis中复制一份,重新封装存入redis
     $scope.saveChoseCart  = function () {
-        baseService.sendPost("/order/saveChoseCart", $scope.choaseCart).then(function (value) {
-            if (value.data) {
-                location.href = "/order/getOrderInfo.html";
-            } else {
-                alert("结算失败!");
-            }
-        })
+        location.href = "/order/getOrderInfo.html";
+        // baseService.sendPost("/order/saveChoseCart", $scope.choaseCart).then(function (value) {
+        //     if (value.data) {
+        //         location.href = "/order/getOrderInfo.html";
+        //     } else {
+        //         alert("结算失败!");
+        //     }
+        // })
     }
 
 });

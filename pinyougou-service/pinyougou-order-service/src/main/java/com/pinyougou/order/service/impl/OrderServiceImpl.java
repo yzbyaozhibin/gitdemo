@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
     public void save(Order order) {
         try {
             //从内存中获取购物车
-            List<Cart> cartList = (List<Cart>) redisTemplate.boundValueOps("cart_" + order.getUserId()).get();
+            List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps("cartList").get(order.getUserId());
             double totalFee = 0;
             String orderList = "";
             for (Cart cart : cartList) {
@@ -113,7 +113,7 @@ public class OrderServiceImpl implements OrderService {
             //
             payLogMapper.insertSelective(payLog);
 
-            redisTemplate.delete("cart_" + order.getUserId());
+            redisTemplate.boundHashOps("cartList").delete(order.getUserId());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -151,7 +151,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void saveChoseCart(List<Cart> carts) {
-
+//        redisTemplate.boundHashOps()
     }
 
 }

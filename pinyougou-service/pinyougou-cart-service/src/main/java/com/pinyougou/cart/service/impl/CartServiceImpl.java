@@ -72,8 +72,8 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<Cart> mergeCart(String username, List<Cart> carts) {
-        List<Cart> cartList = (List<Cart>) redisTemplate.boundValueOps("cart_" + username).get();
+    public List<Cart> mergeCart(String userId, List<Cart> carts) {
+        List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps("cartList").get(userId);
         if (cartList == null) {
             cartList = new ArrayList<>();
         }
@@ -84,26 +84,23 @@ public class CartServiceImpl implements CartService {
                 }
             }
         }
-        redisTemplate.boundValueOps("cart_" + username).set(cartList);
+        redisTemplate.boundHashOps("cartList").put(userId,cartList);
         return cartList;
     }
 
     @Override
-    public List<Cart> findCartFromRedis(String username) {
-
-
-        System.out.println("uuuu");
-        return (List<Cart>) redisTemplate.boundValueOps("cart_" + username).get();
+    public List<Cart> findCartFromRedis(String userId) {
+        return (List<Cart>) redisTemplate.boundHashOps("cartList").get(userId);
     }
 
     @Override
-    public void addItemToCartByRedis(String username, Long itemId, Integer num) {
-        List<Cart> cartList = findCartFromRedis(username);
+    public void addItemToCartByRedis(String userId, Long itemId, Integer num) {
+        List<Cart> cartList = findCartFromRedis(userId);
         if (cartList == null) {
             cartList = new ArrayList<>();
         }
         cartList = addItemToCart(cartList,itemId,num);
-        redisTemplate.boundValueOps("cart_" + username).set(cartList);
+        redisTemplate.boundHashOps("cartList" ).put(userId,cartList);
     }
 
     private OrderItem searchOrderItemByItemId(List<OrderItem> orderItems, Long itemId) {
