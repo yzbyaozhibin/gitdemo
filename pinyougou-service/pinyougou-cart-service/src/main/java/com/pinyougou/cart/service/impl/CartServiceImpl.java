@@ -90,6 +90,9 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<Cart> findCartFromRedis(String username) {
+
+
+        System.out.println("uuuu");
         return (List<Cart>) redisTemplate.boundValueOps("cart_" + username).get();
     }
 
