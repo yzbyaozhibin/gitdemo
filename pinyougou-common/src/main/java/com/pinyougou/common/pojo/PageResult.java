@@ -9,8 +9,14 @@ public class PageResult implements Serializable {
     private List<?> rows;
 
     public PageResult() {
+		System.out.println();
     }
 
+	
+	
+	
+	
+	
     public PageResult(Long total, List<?> rows) {
         this.total = total;
         this.rows = rows;
