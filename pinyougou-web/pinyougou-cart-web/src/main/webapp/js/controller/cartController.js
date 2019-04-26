@@ -1,7 +1,6 @@
 app.controller("cartController", function ($scope, $controller, baseService) {
 
     $controller("baseController", {$scope: $scope});
-
     //测试数据
     // $scope.choseCart = [{sellerId:'admin',seller:'品优购',orderItems:[{
     //                 "goodsId": 149187842867996,
@@ -33,6 +32,19 @@ app.controller("cartController", function ($scope, $controller, baseService) {
     //             "title": "小米6 全网通 移动4G 128G",
     //             "totalFee": 11596
     //         }]}];
+
+    //初始化所有check
+    $scope.initCheck = function (cartList) {
+        $scope.checkAll = false;
+        for (var i = 0; i < cartList.length; i++) {
+            $scope.checkSellerStatus[$scope.cartList[i].sellerId] = false;
+            var orderItems = cartList[i].orderItems;
+            for (var j = 0; j < orderItems.length; j++) {
+                $scope.checkItemStatus[orderItems[j].itemId] = false;
+            }
+        }
+    };
+
     $scope.choseCart = [];
     $scope.updateChoseCart = function (cart, orderItem, event) {
         if (event.target.checked) {//选中
@@ -43,6 +55,7 @@ app.controller("cartController", function ($scope, $controller, baseService) {
                     if (sellerId == cart.sellerId) {
                         check = 1;
                         $scope.choseCart[i].orderItems.push(orderItem);
+                        $scope.checkItemStatus[orderItem.itemId] = true;
                         if (cart.orderItems.length == $scope.choseCart[i].orderItems.length) {
                             $scope.checkSellerStatus[cart.sellerId] = true;
                         }
@@ -55,23 +68,22 @@ app.controller("cartController", function ($scope, $controller, baseService) {
                 $scope.addNewCart(cart, orderItem);
             }
         } else {//未选中
-            if ($scope.choseCart.length > 0) {
-                for (var i = 0; i < $scope.choseCart.length; i++) {
-                    var sellerId = $scope.choseCart[i].sellerId;
-                    if (sellerId == cart.sellerId) {
-                        var orderItems = $scope.choseCart[i].orderItems;
-                        for (var j = 0; j < orderItems.length; j++) {
-                            if (orderItems[j].itemId == orderItem.itemId) {
-                                $scope.choseCart[i].orderItems.splice($scope.choseCart[i].orderItems.indexOf(orderItems[j]), 1);
-                            }
-                        }
-                        if (orderItems.length == 0) {
-                            $scope.choseCart.splice($scope.choseCart.indexOf($scope.choseCart[i]), 1);
+            for (var i = 0; i < $scope.choseCart.length; i++) {
+                if ($scope.choseCart[i].sellerId == cart.sellerId) {
+                    var orderItems = $scope.choseCart[i].orderItems;
+                    for (var j = 0; j < orderItems.length; j++) {
+                        if (orderItems[j].itemId == orderItem.itemId) {
+                            $scope.choseCart[i].orderItems.splice($scope.choseCart[i].orderItems.indexOf(orderItems[j]), 1);
                         }
                     }
-                    $scope.checkSellerStatus[cart.sellerId] = false;
+                    $scope.checkItemStatus[orderItem.itemId] = false;
+                    if (orderItems.length == 0) {
+                        $scope.choseCart.splice($scope.choseCart.indexOf($scope.choseCart[i]), 1);
+                    }
                 }
             }
+            $scope.checkSellerStatus[cart.sellerId] = false;
+            $scope.checkAll = false;
         }
 
     };
@@ -83,16 +95,25 @@ app.controller("cartController", function ($scope, $controller, baseService) {
         $scope.newCart.orderItems = [];
         $scope.newCart.orderItems.push(orderItem);
         $scope.choseCart.push($scope.newCart);
+        $scope.checkItemStatus[orderItem.itemId] = true;
+        for (var i = 0; i < $scope.choseCart.length; i++) {
+            if ($scope.choseCart.sellerId == cart.sellerId) {
+                if ($scope.choseCart[i].orderItems.length == cart.orderItems.length) {
+                    $scope.checkSellerStatus[cart.sellerId] = true;
+                }
+            }
+        }
     };
 
     $scope.checkItemStatus = {};
+    $scope.checkAll = false;
     $scope.checkItem = function (cart, orderItem) {
-        return $scope.checkItemStatus[cart.sellerId];
+        return $scope.checkItemStatus[orderItem.itemId] || $scope.checkAll;
     };
 
     $scope.checkSellerStatus = {};
     $scope.checkSeller = function (cart) {
-        return $scope.checkSellerStatus[cart.sellerId];
+        return $scope.checkSellerStatus[cart.sellerId] || $scope.checkAll;
     };
 
     $scope.createSingleCart = function (cart, event) {
@@ -100,21 +121,62 @@ app.controller("cartController", function ($scope, $controller, baseService) {
         if ($scope.choseCart.length > 0) {
             for (var i = 0; i < $scope.choseCart.length; i++) {
                 if ($scope.choseCart[i].sellerId == cart.sellerId) {
-                    $scope.choseCart.splice($scope.choseCart.indexOf($scope.choseCart[i]),1);
-                    if (event.target.checked) {
+                    if (event.target.checked) {//选中
+                        $scope.choseCart.splice($scope.choseCart.indexOf($scope.choseCart[i]), 1);
                         $scope.choseCart.push($scope.newCart);
-                        $scope.checkItemStatus[cart.sellerId] = true;
-                    } else {
-                        $scope.choseCart.splice($scope.choseCart.indexOf($scope.newCart),1);
-                        $scope.checkItemStatus[cart.sellerId] = false;
+                        $scope.updateOrderItemsByCart($scope.newCart.orderItems, true);
+                        $scope.checkSellerStatus[cart.sellerId] = true;
+                        // $scope.checkItemStatus[cart.sellerId] = true;
+                    } else {//未选中
+                        $scope.choseCart.splice($scope.choseCart.indexOf($scope.newCart), 1);
+                        $scope.updateOrderItemsByCart($scope.newCart.orderItems, false);
+                        $scope.checkSellerStatus[cart.sellerId] = false;
+                        $scope.checkAll = false;
                     }
+                } else {
+                    $scope.choseCart.push($scope.newCart);
+                    $scope.updateOrderItemsByCart($scope.newCart.orderItems, true);
+                    $scope.checkSellerStatus[cart.sellerId] = true;
+                    $scope.checkAll = false;
                 }
             }
         } else {
-            $scope.choseCart.push($scope.newCart);
-            $scope.checkItemStatus[cart.sellerId] = true;
+            if (event.target.checked) {//选中
+                $scope.choseCart.push($scope.newCart);
+                $scope.updateOrderItemsByCart($scope.newCart.orderItems, true);
+                $scope.checkSellerStatus[cart.sellerId] = true;
+                $scope.checkAll = false;
+            }
         }
+        if ($scope.choseCart.length == $scope.cartList.length) {
+            $scope.checkAll = true;
+        }
+    };
 
+    $scope.updateOrderItemsByCart = function (orderItems, boolean) {
+        for (var j = 0; j < orderItems.length; j++) {
+            $scope.checkItemStatus[orderItems[j].itemId] = boolean;
+        }
+    };
+
+    $scope.createAll = function (event) {
+        if (event.target.checked) {
+            $scope.choseCart = JSON.parse(JSON.stringify($scope.cartList));
+            for (var i = 0; i < $scope.choseCart.length; i++) {
+                var sellerId = $scope.choseCart[i].sellerId;
+                $scope.checkSellerStatus[sellerId] = true;
+                $scope.updateOrderItemsByCart($scope.choseCart[i].orderItems, true)
+            }
+            $scope.checkAll = true;
+        } else {
+            for (var j = 0; j < $scope.cartList.length; j++) {
+                var sellerId1 = $scope.cartList[j].sellerId;
+                $scope.checkSellerStatus[sellerId1] = false;
+                $scope.updateOrderItemsByCart($scope.choseCart[j].orderItems, false);
+            }
+            $scope.checkAll = false;
+            $scope.choseCart = [];
+        }
     };
 
     $scope.findCart = function () {
@@ -122,6 +184,7 @@ app.controller("cartController", function ($scope, $controller, baseService) {
             $scope.res = {total: 0, totalPrice: 0};
             $scope.cartList = value.data;
             $scope.getTotal($scope.cartList);
+            $scope.initCheck($scope.cartList);
         })
     };
 

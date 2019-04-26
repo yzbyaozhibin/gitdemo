@@ -14,7 +14,7 @@
     <script src="js/controller/cartController.js"></script>
 
 </head>
-<body id="a" ng-app="pinyougou" ng-controller="cartController" ng-init="showName();findCart()" style="display: none;">
+<body id="a" ng-app="pinyougou" ng-controller="cartController" ng-init="showName();findCart();" style="display: none;">
 <!--head-->
 <div class="top">
     <div class="py-container">
@@ -63,11 +63,11 @@
         </div>
     </div>
     <!--All goods-->
-    <div class="allgoods">{{cartList}}
+    <div class="allgoods">商家状态:{{checkSellerStatus}}商品状态:{{checkItemStatus}}全部状态:{{checkAll}}
         <h4>全部商品<span>11</span></h4>
         <div class="cart-main">
             <div class="yui3-g cart-th">
-                <div class="yui3-u-1-4"><input type="checkbox" /> 全部</div>
+                <div class="yui3-u-1-4"><input type="checkbox" ng-checked="checkAll" ng-click="createAll($event)"/> 全部</div>
                 <div class="yui3-u-1-4">商品</div>
                 <div class="yui3-u-1-8">单价（元）</div>
                 <div class="yui3-u-1-8">数量</div>
@@ -115,7 +115,7 @@
         </div>
         <div class="cart-tool">
             <div class="select-all">
-                <input type="checkbox" />
+                <input type="checkbox" ng-click="createAll($event)"/>
                 <span>全选</span>
             </div>
             <div class="option">
