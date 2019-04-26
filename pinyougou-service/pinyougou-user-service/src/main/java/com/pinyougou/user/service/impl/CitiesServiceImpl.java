@@ -60,8 +60,4 @@ public class CitiesServiceImpl implements CitiesService {
         return citiesMapper.findCityName(cityId);
     }
 
-    @Override
-    public String findCityName(String cityId) {
-        return null;
-    }
 }
