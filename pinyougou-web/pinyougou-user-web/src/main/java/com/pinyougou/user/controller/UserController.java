@@ -2,16 +2,8 @@ package com.pinyougou.user.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.common.pojo.PageResult;
-import com.pinyougou.pojo.PayLog;
-import com.pinyougou.pojo.Cities;
-import com.pinyougou.pojo.Provinces;
-import com.pinyougou.pojo.User;
-import com.pinyougou.service.OrderService;
-import com.pinyougou.service.PayLogService;
-import com.pinyougou.service.PayService;
-import com.pinyougou.service.CitiesService;
-import com.pinyougou.service.ProvincesService;
-import com.pinyougou.service.UserService;
+import com.pinyougou.pojo.*;
+import com.pinyougou.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,6 +31,8 @@ public class UserController {
     private ProvincesService provincesService;
     @Reference(timeout = 10000)
     private CitiesService citiesService;
+    @Reference(timeout = 10000)
+    private AreasService areasService;
 
     @Reference(timeout = 10000)
     private OrderService orderService;
@@ -143,5 +137,34 @@ public class UserController {
         return citiesService.findCitiesByParentId(parentId);
     }
 
+    @GetMapping("/findAreasByParentId")
+    public List<Areas> findAreasByParentId(@RequestParam(value = "parentId") String parentId){
+        return areasService.findAreasByParentId(parentId);
+    }
+
+    @PostMapping("/saveOrUpdate")
+    public Boolean saveOrUpdate(@RequestBody User user){
+        try{
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            user.setUsername(username);
+            userService.saveUserInfo(user);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+    @GetMapping("/findUserInfo")
+    public User findUserInfo(User user){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        user.setUsername(username);
+        return userService.findByUserName(user);
+    }
+
+    @GetMapping("/addPic")
+    public Boolean addPic(String headPic){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.addPicUrl(username,headPic);
+    }
 
 }
