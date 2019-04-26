@@ -1,5 +1,7 @@
 package com.pinyougou.service;
 
+import com.pinyougou.common.pojo.PageResult;
+import com.pinyougou.cart.Cart;
 import com.pinyougou.pojo.Order;
 import java.util.List;
 import java.io.Serializable;
@@ -13,7 +15,7 @@ import java.util.Map;
 public interface OrderService {
 
 	/** 添加方法 */
-	void save(Order order);
+	Map<String, String> save(Order order, List<Cart> tempCartList);
 
 	/** 修改方法 */
 	void update(Order order);
@@ -33,4 +35,6 @@ public interface OrderService {
 	/** 多条件分页查询 */
 	List<Order> findByPage(Order order, int page, int rows);
 
+    /* 获取用户订单信息*/
+    PageResult getUserOrder(int page,int rows,String userId);
 }

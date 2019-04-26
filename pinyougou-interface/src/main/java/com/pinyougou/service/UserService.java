@@ -3,6 +3,8 @@ package com.pinyougou.service;
 import com.pinyougou.pojo.User;
 import java.util.List;
 import java.io.Serializable;
+import java.util.Map;
+
 /**
  * UserService 服务接口
  * @date 2019-03-28 15:42:10

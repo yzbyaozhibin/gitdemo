@@ -8,27 +8,24 @@
     	<link rel="stylesheet" type="text/css" href="/css/webbase.css"/>
 		<link rel="stylesheet" type="text/css" href="/css/pages-weixinpay.css"/>
 		<script src="/plugins/angularjs/angular.min.js"></script>
-		<script src="/js/qrious.min.js"></script>
 		<script src="/js/base.js"></script>
 		<script src="/js/service/baseService.js"></script>
-		<script src="/js/controller/baseController.js"></script>
-		<script src="/js/controller/cartController.js"></script>
-		<script src="/js/controller/orderController.js"></script>
+		<script src="js/controller/indexController.js"></script>
+		<script src="js/controller/homeIndexController.js"></script>
 		<script type="text/javascript">
-            /** 配置位置提供者 */
-            app.config(function($locationProvider){
-                $locationProvider.html5Mode(true);
-            });
+			app.config(function ($locationProvider) {
+				$locationProvider.html5Mode(true);
+            })
 		</script>
 
 	</head>
-	<body ng-app="pinyougou" ng-controller="orderController" ng-init="genPayCode()" style="display: none">
+	<body ng-app="pinyougou" ng-controller="homeIndexController" ng-init="genPayCode();showUser()" style="display: none">
 		<!--head-->
 		<div class="top">
 			<div class="py-container">
 				<div class="shortcut">
 					<ul class="fl">
-						<li class="f-item">{{username}}品优购欢迎您！&nbsp;
+						<li class="f-item">{{username}}&nbsp;&nbsp;品优购欢迎您！&nbsp;
 							<a href="http://sso.pinyougou.com/logout?service=http://cart.pinyougou.com/login">退出</a></li>
 					</ul>
 					<ul class="fr">
@@ -69,7 +66,7 @@
                     <div class="fl sao"> 
                         <p class="red">{{tips}}</p>
                         <div class="fl code">
-                            <img  src="/barcode?url={{codeUrl}}"/>
+                            <img id="qrious"/>
                             <div class="saosao">
                                 <p>请使用微信扫一扫</p>
                                 <p>扫描二维码支付</p>
