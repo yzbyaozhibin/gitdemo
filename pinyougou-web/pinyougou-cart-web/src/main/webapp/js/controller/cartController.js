@@ -34,6 +34,7 @@ app.controller("cartController", function ($scope, $controller, baseService) {
     //         }]}];
 
     //初始化所有check
+    // --------------------------------------------------复选框开始---------------------------------------------
     $scope.initCheck = function (cartList) {
         $scope.checkAll = false;
         for (var i = 0; i < cartList.length; i++) {
@@ -46,6 +47,7 @@ app.controller("cartController", function ($scope, $controller, baseService) {
     };
 
     $scope.choseCart = [];
+    //点击子选框的方法
     $scope.updateChoseCart = function (cart, orderItem, event) {
         if (event.target.checked) {//选中
             if ($scope.choseCart.length > 0) {
@@ -67,6 +69,9 @@ app.controller("cartController", function ($scope, $controller, baseService) {
             } else {
                 $scope.addNewCart(cart, orderItem);
             }
+            //判断是否需要选中全部
+            $scope.checkAllFn();
+
         } else {//未选中
             for (var i = 0; i < $scope.choseCart.length; i++) {
                 if ($scope.choseCart[i].sellerId == cart.sellerId) {
@@ -85,7 +90,7 @@ app.controller("cartController", function ($scope, $controller, baseService) {
             $scope.checkSellerStatus[cart.sellerId] = false;
             $scope.checkAll = false;
         }
-
+        $scope.getTotal();
     };
 
     $scope.addNewCart = function (cart, orderItem) {
@@ -116,6 +121,7 @@ app.controller("cartController", function ($scope, $controller, baseService) {
         return $scope.checkSellerStatus[cart.sellerId] || $scope.checkAll;
     };
 
+    //点击父选框处理方法
     $scope.createSingleCart = function (cart, event) {
         $scope.newCart = JSON.parse(JSON.stringify(cart));
         if ($scope.choseCart.length > 0) {
@@ -148,8 +154,21 @@ app.controller("cartController", function ($scope, $controller, baseService) {
                 $scope.checkAll = false;
             }
         }
+        $scope.checkAllFn();
+        $scope.getTotal();
+    };
+
+    $scope.checkAllFn = function () {
         if ($scope.choseCart.length == $scope.cartList.length) {
-            $scope.checkAll = true;
+            var checkAll = 1;
+            for (var k = 0; k < $scope.choseCart.length; k++) {
+                if (!$scope.checkSellerStatus[$scope.choseCart[k].sellerId]) {
+                    checkAll = 0;
+                }
+            }
+            if (checkAll == 1) {
+                $scope.checkAll=true;
+            }
         }
     };
 
@@ -159,6 +178,8 @@ app.controller("cartController", function ($scope, $controller, baseService) {
         }
     };
 
+
+    //点击总选框的方法
     $scope.createAll = function (event) {
         if (event.target.checked) {
             $scope.choseCart = JSON.parse(JSON.stringify($scope.cartList));
@@ -177,23 +198,28 @@ app.controller("cartController", function ($scope, $controller, baseService) {
             $scope.checkAll = false;
             $scope.choseCart = [];
         }
+        $scope.getTotal();
     };
-
+// --------------------------------------------------复选框结束---------------------------------------------
     $scope.findCart = function () {
         baseService.sendGet("/cart/findCart").then(function (value) {
             $scope.res = {total: 0, totalPrice: 0};
             $scope.cartList = value.data;
-            $scope.getTotal($scope.cartList);
+            // $scope.getTotal($scope.cartList);
             $scope.initCheck($scope.cartList);
         })
     };
 
-    $scope.getTotal = function (cartList) {
-        for (var i = 0; i < cartList.length; i++) {
-            var orderItems = cartList[i].orderItems;
-            for (var j = 0; j < orderItems.length; j++) {
-                $scope.res.total += orderItems[j].num;
-                $scope.res.totalPrice += orderItems[j].totalFee;
+    $scope.res = {total:0, totalPrice:0};
+    $scope.getTotal = function () {
+        $scope.res = {total:0, totalPrice:0};
+        if ($scope.choseCart.length > 0) {
+            for (var i = 0; i < $scope.choseCart.length; i++) {
+                var orderItems = $scope.choseCart[i].orderItems;
+                for (var j = 0; j < orderItems.length; j++) {
+                    $scope.res.total += orderItems[j].num;
+                    $scope.res.totalPrice += orderItems[j].totalFee;
+                }
             }
         }
     };
