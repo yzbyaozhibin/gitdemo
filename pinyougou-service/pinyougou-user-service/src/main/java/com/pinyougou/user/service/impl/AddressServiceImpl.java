@@ -36,7 +36,11 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public void delete(Serializable id) {
-
+            try{
+                addressMapper.deleteByPrimaryKey(id);
+            }catch(Exception ex){
+                throw new RuntimeException(ex);
+            }
     }
 
     @Override
@@ -66,6 +70,22 @@ public class AddressServiceImpl implements AddressService {
         criteria.andEqualTo("userId", userId);
         example.orderBy("isDefault").desc();
         return addressMapper.selectByExample(example);
+
+    }
+
+    @Override
+    public void setDefaultAddress(Long id,String userId) {
+        try{
+            Address address = addressMapper.selectByPrimaryKey(id);
+            address.setIsDefault("1");
+            addressMapper.updateByPrimaryKey(address);
+            List<Address> addressList = findByUserId(userId);
+            Address address1 = addressList.get(0);
+            address1.setIsDefault("0");
+            addressMapper.updateByPrimaryKey(address1);
+        }catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
 
     }
 }

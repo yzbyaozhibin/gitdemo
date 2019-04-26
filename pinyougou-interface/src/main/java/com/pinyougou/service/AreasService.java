@@ -32,4 +32,6 @@ public interface AreasService {
 	List<Areas> findByPage(Areas areas, int page, int rows);
 
     List<Areas> findAreasByParentId(String parentId);
+
+    String findAreaName(String areaId);
 }

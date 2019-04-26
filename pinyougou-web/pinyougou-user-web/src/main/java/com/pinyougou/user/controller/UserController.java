@@ -241,6 +241,37 @@ public class UserController {
         return citiesService.findCityName(cityId);
     }
 
+    @GetMapping("/getAreas")
+    public String getAreas(String areaId){
+        return areasService.findAreaName(areaId);
+    }
+
+
+    @GetMapping("/deleteAddress")
+    public boolean deleteAddress(Long id){
+        try {
+            addressService.delete(id);
+            return true;
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+
+    @GetMapping("/setDefaultAddress")
+    public boolean setDefaultAddress(Long id,HttpServletRequest request){
+        try {
+            String userId = request.getRemoteUser();
+            addressService.setDefaultAddress(id,userId);
+            return true;
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+
 
 
 }

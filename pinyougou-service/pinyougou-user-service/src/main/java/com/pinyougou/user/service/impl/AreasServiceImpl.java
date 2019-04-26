@@ -53,4 +53,9 @@ public class AreasServiceImpl implements AreasService {
     public List<Areas> findAreasByParentId(String parentId) {
         return areasMapper.findAreasByParentId(parentId);
     }
+
+    @Override
+    public String findAreaName(String areaId) {
+        return areasMapper.findAreaName(areaId);
+    }
 }

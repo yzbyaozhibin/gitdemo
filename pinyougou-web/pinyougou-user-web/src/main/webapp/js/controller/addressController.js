@@ -11,35 +11,13 @@ app.controller("addressController",function ($scope,$controller,baseService) {
         $scope.entity =JSON.parse(JSON.stringify(entity));
     };
     $scope.entity={userId:"",provinceId:"",cityId:"",townId:"",mobile:"",address:"",contact:"",isDefault:"",notes:"",alias:""};
-    $scope.saveOrUpdate=function (provinceId,cityId,areaId) {
-        $scope.getProvince(provinceId);
-        $scope.getCity(cityId);
-        $scope.getAreas(areaId);
-        $scope.entity.provinceId=$scope.pro;
-        $scope.entity.cityId=$scope.ci;
-        $scope.entity.townId=$scope.ar;
-        alert(JSON.stringify($scope.entity));
-        var url = "saveAddress";
-        if ($scope.entity.id) {
-            url = "updateAddress";
-        }
-        /*baseService.sendPost("/user/" + url, $scope.entity).then(function (value) {
-            if (value.data) {
-                $scope.showOrderInfo();
-            } else {
-                alert("操作失败!");
-            }
-        })*/
-
-    }
-
 
     //查询省份名称
     $scope.getProvince=function (id) {
         baseService.sendGet("/user/getProvince?provinceId="+id).then(function (response) {
-            $scope.pro= response.data;
-        })
-    }
+            $scope.pr= response.data;
+        });
+    };
     //查询市的名称
     $scope.getCity=function (id) {
         baseService.sendGet("/user/getCity?cityId="+id).then(function (response) {
@@ -53,4 +31,47 @@ app.controller("addressController",function ($scope,$controller,baseService) {
             $scope.ar=response.data;
         })
     }
+    $scope.saveOrUpdate=function () {
+        $scope.entity.provinceId=$scope.pr;
+        $scope.entity.cityId=$scope.ci;
+        $scope.entity.townId=$scope.ar;
+        alert(JSON.stringify($scope.entity));
+        var url = "saveAddress";
+        if ($scope.entity.id) {
+            url = "updateAddress";
+        }
+        baseService.sendPost("/user/" + url, $scope.entity).then(function (value) {
+            if (value.data) {
+                 location.href="/home-setting-address.html";
+            } else {
+                alert("操作失败!");
+            }
+        })
+
+    }
+
+    //删除地址
+    $scope.deleteAddress=function (id) {
+        baseService.sendGet("/user/deleteAddress?id="+id).then(function (response) {
+            if (response.data){
+                location.href="/home-setting-address.html";
+            }else {
+                alert("删除失败")
+            }
+        })
+    }
+
+    //设置默认地址
+    $scope.setDefaultAddress=function (id) {
+        baseService.sendGet("/user/setDefaultAddress?id="+id).then(function (response) {
+            if (response.data){
+                location.href="/home-setting-address.html";
+            }else {
+                alert("删除失败")
+            }
+        })
+    }
+
+
+
 });

@@ -205,7 +205,7 @@ $(function(){
                     <div class="body userAddress">
                         <div class="address-title">
                             <span class="title">地址管理</span>
-                            <a data-toggle="modal" data-target=".edit" data-keyboard="false"   class="sui-btn  btn-info add-new" ng-click="entity={},saveOrUpdate()">添加新地址</a>
+                            <a data-toggle="modal" data-target=".edit" data-keyboard="false"   class="sui-btn  btn-info add-new" ng-click="entity={};userInfo.address.province='';userInfo.address.city='';userInfo.address.area=''">添加新地址</a>
                             <span class="clearfix"></span>
                         </div>
                         <div class="address-detail">
@@ -225,9 +225,12 @@ $(function(){
                                         <td>{{address.mobile}}</td>
                                         <td>
                                             <a data-toggle="modal" data-target=".edit" data-keyboard="false" ng-click="show(address)">编辑</a>
-                                            <a href="javascript:;">删除</a>
+                                            <a href="javascript:;" ng-click="deleteAddress(address.id)">删除</a>
 											<span ng-if="address.isDefault=='1'">
 												默认地址
+											</span>
+											<span ng-if="address.isDefault !='1'">
+												<a href="javascript:;" ng-click="setDefaultAddress(address.id)">设为默认地址</a>
 											</span>
                                         </td>
                                     </tr>
@@ -256,17 +259,17 @@ $(function(){
                                             <div class="controls">
                                                 <div data-toggle="distpicker">
                                                 <div class="form-group area">
-                                                    <select class="form-control" id="province1" ng-model="provinces.provinceId " ng-options="p.provinceId as p.province for p in provinces ">
+                                                    <select class="form-control" id="province1" ng-change="getProvince(userInfo.address.province)" ng-model="userInfo.address.province" ng-options="p.provinceId as p.province for p in provinces ">
 														<option value="" selected="selected" >==省==</option>
 													</select>
                                                 </div>
                                                 <div class="form-group area">
-                                                    <select class="form-control" id="city1" ng-model="cities.cityId" ng-options="c.cityId as c.city for c in cities ">
+                                                    <select class="form-control" id="city1" ng-change="getCity(userInfo.address.city)" ng-model="userInfo.address.city" ng-options="c.cityId as c.city for c in cities ">
 														<option value="">==市==</option>
 													</select>
                                                 </div>
                                                 <div class="form-group area">
-                                                    <select class="form-control" id="district1" ng-model="areas.areaId">
+                                                    <select class="form-control" id="district1" ng-change="getAreas(userInfo.address.area)" ng-model="userInfo.address.area" ng-options="a.areaId as a.area for a in areas ">
 														<option value="">==区==</option>
 													</select>
                                                 </div>
@@ -302,13 +305,14 @@ $(function(){
 												<a href="javascript:;" class="sui-btn btn-default" ng-click="entity.alias='公司'">公司</a>
                                             </div>
                                         </div>
-                                        
+                                        {{entity}}
                                         </form>
                                         
                                         
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" data-ok="modal" class="sui-btn btn-primary btn-large" ng-click="saveOrUpdate(provinces.provinceId,cities.cityId,areas.areaId)">确定</button>
+                                        <button type="button" data-ok="modal" class="sui-btn btn-primary btn-large"
+												ng-click="saveOrUpdate()">确定</button>
                                         <button type="button" data-dismiss="modal" class="sui-btn btn-default btn-large" ng-click="entity={}">取消</button>
                                     </div>
                                 </div>

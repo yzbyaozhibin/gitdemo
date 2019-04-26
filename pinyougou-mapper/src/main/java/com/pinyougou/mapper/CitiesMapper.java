@@ -16,4 +16,7 @@ public interface CitiesMapper extends Mapper<Cities>{
 
     @Select("select * from tb_cities where provinceid = #{provinceId}")
     List<Cities> findCitiesByParentId(String parentId);
+
+    @Select("SELECT city from tb_cities where cityid =#{cityId}")
+    String findCityName(String cityId);
 }

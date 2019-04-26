@@ -14,7 +14,4 @@ public interface ProvincesMapper extends Mapper<Provinces>{
 
     @Select("SELECT province from tb_provinces where provinceid =#{provinceId}")
     String findProvinceName(String provinceId);
-
-    @Select("SELECT city from tb_cities where cityid =#{cityId}")
-    String findCityName(String cityId);
 }
