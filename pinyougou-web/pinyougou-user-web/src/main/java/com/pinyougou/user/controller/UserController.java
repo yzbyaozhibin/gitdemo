@@ -139,7 +139,7 @@ public class UserController {
     }
 
     @GetMapping("/findCitiesByParentId")
-    public List<Cities> findCitiesByParentId(@RequestParam String parentId){
+    public List<Cities> findCitiesByParentId(@RequestParam(value = "parentId") String parentId){
         return citiesService.findCitiesByParentId(parentId);
     }
 
