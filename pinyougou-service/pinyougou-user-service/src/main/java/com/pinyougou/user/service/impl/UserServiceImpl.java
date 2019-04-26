@@ -110,4 +110,6 @@ public class UserServiceImpl implements UserService {
         String code1 = (String) redisTemplate.boundValueOps("code").get();
         return StringUtils.isNotBlank(code1)&&code1.equals(code);
     }
+
+
 }

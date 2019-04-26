@@ -15,10 +15,12 @@
 		<script src="/js/controller/seckillGoodsController.js"></script>
 		<script src="/js/controller/seckillOrderController.js"></script>
 		<script type="text/javascript">
-		    app.config(function ($locationProvider) {
-				$locationProvider.html5Mode(true);
-            })
+            /** 配置位置提供者 */
+            app.config(function($locationProvider){
+                $locationProvider.html5Mode(true);
+            });
 		</script>
+
 	</head>
 	<body ng-app="pinyougou"
 		  ng-controller="seckillOrderController"

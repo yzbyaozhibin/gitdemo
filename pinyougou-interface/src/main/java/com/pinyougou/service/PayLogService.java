@@ -31,7 +31,7 @@ public interface PayLogService {
 	/** 多条件分页查询 */
 	List<PayLog> findByPage(PayLog payLog, int page, int rows);
 
-    PayLog findPayLogFromRedis(String userId);
+    PayLog findPayLogFromRedis(String userId, String outTradeNo);
 
-	void updatePayLog(String userId, String transactionId);
+	void updatePayLog(String userId, String outTradeNo, String transactionId);
 }
