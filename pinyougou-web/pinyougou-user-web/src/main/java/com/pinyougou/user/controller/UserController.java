@@ -2,6 +2,8 @@ package com.pinyougou.user.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.common.pojo.PageResult;
+import com.pinyougou.pojo.*;
+import com.pinyougou.service.*;
 import com.pinyougou.pojo.Address;
 import com.pinyougou.pojo.Cities;
 import com.pinyougou.pojo.Provinces;
@@ -32,6 +34,8 @@ public class UserController {
     private ProvincesService provincesService;
     @Reference(timeout = 10000)
     private CitiesService citiesService;
+    @Reference(timeout = 10000)
+    private AreasService areasService;
 
     @Reference(timeout = 10000)
     private OrderService orderService;
@@ -141,6 +145,36 @@ public class UserController {
     @GetMapping("/findCitiesByParentId")
     public List<Cities> findCitiesByParentId(@RequestParam(value = "parentId") String parentId){
         return citiesService.findCitiesByParentId(parentId);
+    }
+
+    @GetMapping("/findAreasByParentId")
+    public List<Areas> findAreasByParentId(@RequestParam(value = "parentId") String parentId){
+        return areasService.findAreasByParentId(parentId);
+    }
+
+    @PostMapping("/saveOrUpdate")
+    public Boolean saveOrUpdate(@RequestBody User user){
+        try{
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            user.setUsername(username);
+            userService.saveUserInfo(user);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+    @GetMapping("/findUserInfo")
+    public User findUserInfo(User user){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        user.setUsername(username);
+        return userService.findByUserName(user);
+    }
+
+    @GetMapping("/addPic")
+    public Boolean addPic(String headPic){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.addPicUrl(username,headPic);
     }
 
     //添加购物车
