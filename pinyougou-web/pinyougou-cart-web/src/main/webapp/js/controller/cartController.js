@@ -1,6 +1,6 @@
 app.controller("cartController", function ($scope, $controller, baseService) {
 
-    $controller("baseController",{$scope:$scope});
+    $controller("baseController", {$scope: $scope});
 
     //测试数据
     // $scope.choseCart = [{sellerId:'admin',seller:'品优购',orderItems:[{
@@ -43,6 +43,9 @@ app.controller("cartController", function ($scope, $controller, baseService) {
                     if (sellerId == cart.sellerId) {
                         check = 1;
                         $scope.choseCart[i].orderItems.push(orderItem);
+                        if (cart.orderItems.length == $scope.choseCart[i].orderItems.length) {
+                            $scope.checkSellerStatus[cart.sellerId] = true;
+                        }
                     }
                 }
                 if (check == 0) {
@@ -52,23 +55,25 @@ app.controller("cartController", function ($scope, $controller, baseService) {
                 $scope.addNewCart(cart, orderItem);
             }
         } else {//未选中
-           if ($scope.choseCart.length > 0) {
-               for (var i = 0; i < $scope.choseCart.length; i++) {
-                   var sellerId = $scope.choseCart[i].sellerId;
-                   if (sellerId == cart.sellerId) {
-                       var orderItems = $scope.choseCart[i].orderItems;
-                       for (var j = 0; j < orderItems.length; j++) {
-                           if (orderItems[j].itemId == orderItem.itemId) {
-                               $scope.choseCart[i].orderItems.splice($scope.choseCart[i].orderItems.indexOf(orderItems[j]),1);
-                           }
-                       }
-                       if(orderItems.length == 0) {
-                           $scope.choseCart.splice($scope.choseCart.indexOf($scope.choseCart[i]),1);
-                       }
-                   }
-               }
-           }
+            if ($scope.choseCart.length > 0) {
+                for (var i = 0; i < $scope.choseCart.length; i++) {
+                    var sellerId = $scope.choseCart[i].sellerId;
+                    if (sellerId == cart.sellerId) {
+                        var orderItems = $scope.choseCart[i].orderItems;
+                        for (var j = 0; j < orderItems.length; j++) {
+                            if (orderItems[j].itemId == orderItem.itemId) {
+                                $scope.choseCart[i].orderItems.splice($scope.choseCart[i].orderItems.indexOf(orderItems[j]), 1);
+                            }
+                        }
+                        if (orderItems.length == 0) {
+                            $scope.choseCart.splice($scope.choseCart.indexOf($scope.choseCart[i]), 1);
+                        }
+                    }
+                    $scope.checkSellerStatus[cart.sellerId] = false;
+                }
+            }
         }
+
     };
 
     $scope.addNewCart = function (cart, orderItem) {
@@ -80,9 +85,41 @@ app.controller("cartController", function ($scope, $controller, baseService) {
         $scope.choseCart.push($scope.newCart);
     };
 
+    $scope.checkItemStatus = {};
+    $scope.checkItem = function (cart, orderItem) {
+        return $scope.checkItemStatus[cart.sellerId];
+    };
+
+    $scope.checkSellerStatus = {};
+    $scope.checkSeller = function (cart) {
+        return $scope.checkSellerStatus[cart.sellerId];
+    };
+
+    $scope.createSingleCart = function (cart, event) {
+        $scope.newCart = JSON.parse(JSON.stringify(cart));
+        if ($scope.choseCart.length > 0) {
+            for (var i = 0; i < $scope.choseCart.length; i++) {
+                if ($scope.choseCart[i].sellerId == cart.sellerId) {
+                    $scope.choseCart.splice($scope.choseCart.indexOf($scope.choseCart[i]),1);
+                    if (event.target.checked) {
+                        $scope.choseCart.push($scope.newCart);
+                        $scope.checkItemStatus[cart.sellerId] = true;
+                    } else {
+                        $scope.choseCart.splice($scope.choseCart.indexOf($scope.newCart),1);
+                        $scope.checkItemStatus[cart.sellerId] = false;
+                    }
+                }
+            }
+        } else {
+            $scope.choseCart.push($scope.newCart);
+            $scope.checkItemStatus[cart.sellerId] = true;
+        }
+
+    };
+
     $scope.findCart = function () {
         baseService.sendGet("/cart/findCart").then(function (value) {
-            $scope.res = {total:0, totalPrice:0};
+            $scope.res = {total: 0, totalPrice: 0};
             $scope.cartList = value.data;
             $scope.getTotal($scope.cartList);
         })
@@ -98,7 +135,7 @@ app.controller("cartController", function ($scope, $controller, baseService) {
         }
     };
 
-    $scope.addToCarts = function (itemId,value) {
+    $scope.addToCarts = function (itemId, value) {
         baseService.sendGet("/cart/addToCarts?itemId=" + itemId + "&num=" + value).then(function (value) {
             if (value.data) {
                 $scope.findCart();
@@ -109,7 +146,7 @@ app.controller("cartController", function ($scope, $controller, baseService) {
     };
 
     //将选择的购物车从redis中复制一份,重新封装存入redis
-    $scope.saveChoseCart  = function () {
+    $scope.saveChoseCart = function () {
         // location.href = "/order/getOrderInfo.html";
         baseService.sendPost("/cart/saveChoseCart", $scope.choseCart).then(function (value) {
             if (value.data) {
