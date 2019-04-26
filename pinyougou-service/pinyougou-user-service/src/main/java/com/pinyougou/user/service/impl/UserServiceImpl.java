@@ -53,7 +53,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(User user) {
-
+        try {
+            userMapper.updateUserPhone(user);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
