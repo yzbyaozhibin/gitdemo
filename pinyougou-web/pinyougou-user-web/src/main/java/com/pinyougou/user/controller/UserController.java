@@ -4,13 +4,15 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.common.pojo.PageResult;
 import com.pinyougou.pojo.*;
 import com.pinyougou.service.*;
+import com.pinyougou.pojo.Cities;
+import com.pinyougou.pojo.Provinces;
+import com.pinyougou.pojo.User;
+import com.pinyougou.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,9 @@ public class UserController {
     private PayService payService;
     @Reference(timeout = 10000)
     private PayLogService payLogService;
+
+    @Reference(timeout = 10000)
+    private CartService cartService;
 
     @PostMapping("/save")
     public Boolean save(@RequestBody User user,String code) {
@@ -166,5 +171,19 @@ public class UserController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userService.addPicUrl(username,headPic);
     }
+
+    //添加购物车
+    @GetMapping("/addToCarts")
+    public Boolean addToCarts(Long itemId, Integer num) {
+        try {
+            String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+            cartService.addItemToCartByRedis(userId, itemId, num);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 }

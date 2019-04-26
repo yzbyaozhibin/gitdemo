@@ -1,17 +1,13 @@
 package com.pinyougou.order.service.impl;
 
-import java.math.BigDecimal;
-import java.util.*;
-
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pinyougou.cart.Cart;
 import com.pinyougou.common.pojo.PageResult;
-import com.pinyougou.common.utils.HttpClientUtils;
 import com.pinyougou.common.utils.IdWorker;
-import com.pinyougou.mapper.ItemMapper;
 import com.pinyougou.mapper.OrderItemMapper;
 import com.pinyougou.mapper.OrderMapper;
 import com.pinyougou.mapper.PayLogMapper;
@@ -19,13 +15,14 @@ import com.pinyougou.pojo.Order;
 import com.pinyougou.pojo.OrderItem;
 import com.pinyougou.pojo.PayLog;
 import com.pinyougou.service.OrderService;
-import com.pinyougou.service.PayLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * OrderServiceImpl
@@ -53,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
     private IdWorker idWorker;
 
     @Override
-    public Map<String,String> save(Order order, List<Cart> tempCartList) {
+    public Map<String, String> save(Order order, List<Cart> tempCartList) {
         try {
 //            //从内存中获取购物车
 //            List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps("cartList").get(order.getUserId());
@@ -206,42 +203,51 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public PageResult getUserOrder(int page,int rows,String userId) {
-        try{
-            PageInfo<Order> pageInfo = PageHelper.startPage(page, rows).doSelectPageInfo(new ISelect() {
+    public PageResult getUserOrder(int page, int rows, String userId) {
+        try {
+            PageInfo<PayLog> pageInfo = PageHelper.startPage(page, rows).doSelectPageInfo(new ISelect() {
                 @Override
                 public void doSelect() {
                     //2. 根据用户名获取订单信息
                     //2.1 创建示范对象
-                    Example example = new Example(Order.class);
+                    Example example = new Example(PayLog.class);
                     //2.2 创建条件对象
                     Example.Criteria criteria = example.createCriteria();
                     //2.3 添加条件
                     criteria.andEqualTo("userId", userId);
-                    example.orderBy("createTime").asc();
-                    List<Order> orders = orderMapper.selectByExample(example);
+                    example.orderBy("createTime").desc();
+                    List<PayLog> payLogs = payLogMapper.selectByExample(example);
                 }
             });
-            List<Order> orders = pageInfo.getList();
+            List<PayLog> payLogs = pageInfo.getList();
             //1. 创建一个数组封装数据
-            List<Map<String,Object>> orderList= new ArrayList<>();
-            if(orders !=null && orders.size()>0){
+            List<Map<String, Object>> payLogList = new ArrayList<>();
+            if (payLogs != null && payLogs.size() > 0) {
                 //遍历获取订单详情
-                for (Order order : orders) {
+                for (PayLog payLog : payLogs) {
                     //创建一个Map集合封装订单信息
-                    Map<String,Object> orderMap=new HashMap<>();
-                    orderMap.put("order",order);
-                    //查询订单详情信息
-                    Example example1 = new Example(OrderItem.class);
-                    Example.Criteria criteria1 = example1.createCriteria();
-                    criteria1.andEqualTo("orderId",order.getOrderId());
-                    List<OrderItem> orderItems = orderItemMapper.selectByExample(example1);
-                    orderMap.put("orderItem",orderItems);
-                    orderList.add(orderMap);
+                    Map<String, Object> payLogMap = new HashMap<>();
+                    payLogMap.put("payLog", payLog);
+                    String[] orderIds = payLog.getOrderList().split(",");
+                    for (String orderId : orderIds) {
+                        Order order1 = new Order();
+                        order1.setOrderId(Long.valueOf(orderId));
+                        Order order = orderMapper.selectOne(order1);
+                        if (order!=null){
+                            payLogMap.put("order", order);
+                        }
+                        //查询订单详情信息
+                        Example example1 = new Example(OrderItem.class);
+                        Example.Criteria criteria1 = example1.createCriteria();
+                        criteria1.andEqualTo("orderId", order.getOrderId());
+                        List<OrderItem> orderItems = orderItemMapper.selectByExample(example1);
+                        payLogMap.put("orderItem", orderItems);
+                    }
+                    payLogList.add(payLogMap);
                 }
             }
-            return new PageResult(pageInfo.getTotal(),orderList);
-        }catch(Exception ex){
+            return new PageResult(pageInfo.getTotal(), payLogList);
+        } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
 

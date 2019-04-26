@@ -29,7 +29,7 @@ app.controller("sellerController",function ($scope, baseService, $controller) {
             } else {
                 alert("审核失败!");
             }
-        })
+        });
     };
 
 

@@ -102,7 +102,19 @@ public class PayLogServiceImpl implements PayLogService {
                 order.setStatus("2");
                 orderMapper.updateByPrimaryKeySelective(order);
             }
-            redisTemplate.boundHashOps("payLog").delete(payLog.getUserId());
+            //移除支付日志
+            List<PayLog> payLogs = (List<PayLog>) redisTemplate.boundHashOps("payLog").get(payLog.getUserId());
+            if (payLogs != null && payLogs.size() > 0) {
+                for (PayLog payLog1 : payLogs) {
+                    if (payLog1.getOutTradeNo().equals(outTradeNo)) {
+                        payLogs.remove(payLog1);
+                    }
+                }
+            }
+            if (payLogs.size() <= 0) {
+                redisTemplate.boundHashOps("payLog").delete(payLog.getUserId());
+            }
+            redisTemplate.boundHashOps("payLog").put(payLog.getUserId(), payLogs);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
