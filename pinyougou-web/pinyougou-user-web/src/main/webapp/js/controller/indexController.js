@@ -7,7 +7,6 @@ app.controller("indexController",function ($scope,baseService) {
         })
     };
 
-    $scope.userInfo = {userInfo.}
     //查询省
     $scope.findProvinces = function ( name) {
         baseService.sendGet("/user/findProvinces").then(function (response) {
