@@ -146,19 +146,53 @@ public class UserController {
 
     //修改密码
     @PostMapping("/changePW")
-    public Boolean changePW(@RequestBody Map userMap, HttpServletRequest request){
-        String pass = (String) userMap.get("pass");
-        String pass1 = DigestUtils.md5DigestAsHex(pass.getBytes());
+    public User changePW(@RequestBody Map<String, Object> userMap, HttpServletRequest request){
+        String password = (String) userMap.get("password");
+        String pass1 = DigestUtils.md5DigestAsHex(password.getBytes());
         String username = request.getRemoteUser();
-        User user =userService.selectUser(username);
-        String password = user.getPassword();
-        if(pass1.equals(password)){
-            userService.updatePassWord((String)userMap.get("newPassword"),username);
-            return true;
+        User user1=userService.selectUser(username);
 
+        String oldPassword = user1.getPassword();
+        if(oldPassword.equals(pass1)){
+            userService.updatePassWord((String) userMap.get("newPassword"),username);
+            user1.setPassword(null);
+            return user1;
+        }
+        return null;
+    }
+
+    //根据用户名或取手机号码
+    @GetMapping("showPhone")
+    public String showPhone(HttpServletRequest request){
+        String username = request.getRemoteUser();
+        User user1 =userService.selectUser(username);
+        String phone = user1.getPhone();
+        return phone;
+    }
+
+    @GetMapping("/checkCode")
+    public Boolean checkCode(String code){
+       return userService.checkSmsCode(code);
+    }
+    @PostMapping("/updatePhone")
+    public Boolean updatePhone(String picCode,String code,@RequestBody User user,HttpServletRequest request){
+        try {
+            String username = request.getRemoteUser();
+            String verify_code = (String) request.getSession().getAttribute("verify_code");
+            if(verify_code.equals(picCode)){
+                if (userService.checkSmsCode(code)){
+                    user.setUsername(username);
+                    userService.update(user);
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
     }
-
-
 }

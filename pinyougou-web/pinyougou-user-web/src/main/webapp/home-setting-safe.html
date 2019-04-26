@@ -11,6 +11,11 @@
 	<script src="js/service/baseService.js"></script>
 	<script src="js/controller/indexController.js"></script>
 	<script src="js/controller/userController.js"></script>
+	<script type="text/javascript">
+        app.config(function ($locationProvider) {
+            $locationProvider.html5Mode(true);
+        })
+	</script>
 
 </head>
 <body ng-app="pinyougou" ng-controller="userController" ng-init="showUser()" >
@@ -317,11 +322,11 @@
 				</div>
 			</div>
 			<!--右侧主内容-->
-			<div class="yui3-u-5-6">
+			<div class="yui3-u-5-6">{{user}}
 				<div class="body userSafe">
 					<ul class="sui-nav nav-tabs nav-large nav-primary ">
 						<li class="active"><a href="#one" data-toggle="tab">密码设置</a></li>
-						<li><a href="#two" data-toggle="tab">绑定手机</a></li>
+						<li><a href="#two" data-toggle="tab" ng-click="showPhone()">绑定手机</a></li>
 					</ul>
 					<div class="tab-content ">
 						<div id="one" class="tab-pane active">
@@ -329,7 +334,7 @@
 								<div class="control-group">
 									<label for="inputuser" class="control-label">用户名：</label>
 									<div class="controls">
-										<input  class="fn-tinput"  type="text"  value="{{username}}" />
+										<input  class="fn-tinput"  type="text" disabled value="{{username}}" />
 
 									</div>
 								</div>
@@ -337,7 +342,7 @@
 								<div class="control-group">
 									<label for="inputOldPassword" class="control-label">原始密码：</label>
 									<div class="controls">
-										<input  class="fn-tinput"  type="password"  ng-model="pass" placeholder="原始密码" required id="originalPassword"/>
+										<input  class="fn-tinput"  type="password"  ng-model="user.password" placeholder="原始密码" required id="originalPassword"/>
 
 									</div>
 								</div>
@@ -345,7 +350,7 @@
 								<div class="control-group">
 									<label for="inputPassword" class="control-label">密码：</label>
 									<div class="controls">
-										<input class="fn-tinput" type="password" ng-model="newPassword" name="uppass" value="" placeholder="新密码" required id="newPassword" data-rule-remote="php.php">
+										<input class="fn-tinput" type="password" ng-model="user.newPassword" name="uppass" value="" placeholder="新密码" required id="newPassword" data-rule-remote="php.php">
 									</div>
 								</div>
 								<div class="control-group">
@@ -358,7 +363,7 @@
 								<div class="control-group">
 									<label class="control-label"></label>
 									<div class="controls">
-										<button type="submit" class="sui-btn btn-primary" ng-click="changePw()">提交</button>
+										<button type="botton" class="sui-btn btn-primary" ng-click="changePw()">提交</button>
 									</div>
 								</div>
 							</form>
@@ -388,29 +393,25 @@
 							<form class="sui-form form-horizontal sui-validate" data-toggle='validate' id="bind-form">
 
 								<div class="control-group">
-									<label for="inputPassword" class="control-label">验证方式：</label>
-									<div class="controls fixed">手机验证（138****9856）</div>
-								</div>
-								<div class="control-group">
-									<label for="inputcode" class="control-label">验证码：</label>
+									<label for="inputcode" class="control-label">手机号码：</label>
 									<div class="controls">
-										<input name="inputcode" type="text" id="inputcode">
+										<input name="inputcode" type="text" id="inputcode" ng-model="user.phone" >
 									</div>
-									<div class="controls">
-										验证码
-									</div>
+
 								</div>
 								<div class="control-group">
 									<label for="inputRepassword" class="control-label">短信验证码：</label>
 									<div class="controls">
-										<input name="msgcode" type="text" id="msgcode">
+										<input name="msgcode" type="text" ng-model="code" id="msgcode" >
 									</div>
 									<div class="controls">
-										<button class="sui-btn btn-info">发送</button>
+										<button class="sui-btn btn-info" ng-click="sendSms()">获取验证码</button>
 									</div>
 								</div>
 								<div class="control-group next-btn">
-									<a class="sui-btn btn-primary" href="home-setting-address-phone.html">下一步</a>
+									<a class="sui-btn btn-primary" ng-click="checkCode()">提交验证码</a>&nbsp;
+									<!--<a class="sui-btn btn-primary" ng-if="isNext" href="home-setting-address-phone.html">下一步</a>-->
+									<a class="sui-btn btn-primary"  href="home-setting-address-phone.html">下一步</a>
 								</div>
 							</form>
 						</div>
