@@ -11,6 +11,7 @@ import com.pinyougou.pojo.User;
 import com.pinyougou.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -168,7 +169,8 @@ public class UserController {
     public User findUserInfo(User user){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         user.setUsername(username);
-        return userService.findByUserName(user);
+        User user1 = userService.findByUserName(user);
+        return user1;
     }
 
     @GetMapping("/addPic")
@@ -176,6 +178,7 @@ public class UserController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userService.addPicUrl(username,headPic);
     }
+
 
     //添加购物车
     @GetMapping("/addToCarts")
@@ -273,5 +276,55 @@ public class UserController {
 
 
 
+    //修改密码
+    @PostMapping("/changePW")
+    public User changePW(@RequestBody Map<String, Object> userMap, HttpServletRequest request){
+        String password = (String) userMap.get("password");
+        String pass1 = DigestUtils.md5DigestAsHex(password.getBytes());
+        String username = request.getRemoteUser();
+        User user1=userService.selectUser(username);
 
+        String oldPassword = user1.getPassword();
+        if(oldPassword.equals(pass1)){
+            userService.updatePassWord((String) userMap.get("newPassword"),username);
+            user1.setPassword(null);
+            return user1;
+        }
+        return null;
+    }
+
+    //根据用户名或取手机号码
+    @GetMapping("showPhone")
+    public String showPhone(HttpServletRequest request){
+        String username = request.getRemoteUser();
+        User user1 =userService.selectUser(username);
+        String phone = user1.getPhone();
+        return phone;
+    }
+
+    @GetMapping("/checkCode")
+    public Boolean checkCode(String code){
+       return userService.checkSmsCode(code);
+    }
+    @PostMapping("/updatePhone")
+    public Boolean updatePhone(String picCode,String code,@RequestBody User user,HttpServletRequest request){
+        try {
+            String username = request.getRemoteUser();
+            String verify_code = (String) request.getSession().getAttribute("verify_code");
+            if(verify_code.equals(picCode)){
+                if (userService.checkSmsCode(code)){
+                    user.setUsername(username);
+                    userService.update(user);
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

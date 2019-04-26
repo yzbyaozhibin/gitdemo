@@ -65,11 +65,14 @@ app.controller("indexController",function ($scope,baseService) {
 
 
 
-    /*$scope.findUserInfo = function () {
+    $scope.findUserInfo = function () {
         baseService.sendGet("/user/findUserInfo").then(function (response) {
             $scope.userInfo = response.data;
         })
-    }*/
+    };
+   /* $scope.show =function (entity) {
+        $scope.userInfo = JSON.parse(JSON.stringify(entity));
+    };*/
 
     /**上传图片 */
     $scope.uploadFile = function(){
@@ -77,7 +80,7 @@ app.controller("indexController",function ($scope,baseService) {
             /** 如果上传成功，取出url */
             if(response.data.status == 200){
                 /** 设置图片访问地址 */
-                $scope.userInfo.headPic = response.data.url;
+                 $scope.userInfo.headPic = response.data.url;
                 $scope.addPic();
             }else{
                 alert("上传失败！");
@@ -91,4 +94,6 @@ app.controller("indexController",function ($scope,baseService) {
                 }
             })
         }
+
+
 });
