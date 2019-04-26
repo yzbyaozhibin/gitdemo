@@ -7,12 +7,14 @@
 	<select id="findAll" resultType="Seller">
 		select * from tb_seller
 		<where>
+			<if test="status != '' and status != null">
 				status = #{status}
+			</if>
 			<if test="name != null and name != ''">
-				name like concat('%', #{name},'%')
+				and name like concat('%', #{name},'%')
 			</if>
 			<if test="nickName != null and nickName != ''">
-				nick_name like concat('%', #{nickName},'%')
+				and nick_name like concat('%', #{nickName},'%')
 			</if>
 		</where>
 	</select>

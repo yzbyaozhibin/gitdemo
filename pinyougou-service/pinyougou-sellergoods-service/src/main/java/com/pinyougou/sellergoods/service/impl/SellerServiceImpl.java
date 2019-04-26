@@ -55,13 +55,13 @@ public class SellerServiceImpl implements SellerService {
 
     @Override
     public List<Seller> findAll() {
-        return null;
+        return sellerMapper.selectAll();
     }
 
     @Override
     public PageResult findByPage(Seller seller, int page, int rows) {
         try {
-            PageInfo<Object> pageInfo = PageHelper.startPage(page, rows).doSelectPageInfo(new ISelect() {
+            PageInfo<Seller> pageInfo = PageHelper.startPage(page, rows).doSelectPageInfo(new ISelect() {
                 @Override
                 public void doSelect() {
                     sellerMapper.findAll(seller);
@@ -77,4 +77,5 @@ public class SellerServiceImpl implements SellerService {
     public void updateStatus(Seller seller) {
         sellerMapper.updateByPrimaryKeySelective(seller);
     }
+
 }

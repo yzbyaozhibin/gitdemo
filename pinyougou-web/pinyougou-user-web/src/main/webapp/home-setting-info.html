@@ -9,11 +9,14 @@
 
 	<script src="/plugins/angularjs/angular.min.js"></script>
 	<script src="/js/base.js"></script>
+	<script src="/js/service/baseService.js"></script>
+	<script src="js/controller/indexController.js"></script>
+	<script src="/plugins/My97DatePicker/WdatePicker.js"></script>
 
 
 </head>
 
-<body>
+<body ng-app="pinyougou" ng-controller="indexController" ng-init="showUser(); findProvinces('provinces')">
     <!-- 头部栏位 -->
     <!--页面顶部-->
 <div id="nav-bottom">
@@ -23,8 +26,10 @@
 			<div class="py-container">
 				<div class="shortcut">
 					<ul class="fl">
-						<li class="f-item">品优购欢迎您！</li>
-						<li class="f-item">请<a href="login.html" target="_blank">登录</a>　<span><a href="register.html" target="_blank">免费注册</a></span></li>
+						<li class="f-item" ng-if="username">{{username}},品优购欢迎您！&nbsp;
+							<a href="http://sso.pinyougou.com/logout?service=http://www.pinyougou.com">退出</a>
+						</li>
+						<li class="f-item" ng-if="!username">请<a href="login.html" target="_blank">登录</a>　<span><a href="register.html" target="_blank">免费注册</a></span></li>
 					</ul>
 					<ul class="fr">
 						<li class="f-item">我的订单</li>
@@ -151,9 +156,9 @@ $(function(){
 
 <script type="text/javascript" src="/js/plugins/birthday/birthday.js"></script>
 
-<script type="text/javascript" src="/js/plugins/citypicker/distpicker.data.js"></script>
+<!--<script type="text/javascript" src="/js/plugins/citypicker/distpicker.data.js"></script>
 
-<script type="text/javascript" src="/js/plugins/citypicker/distpicker.js"></script>
+<script type="text/javascript" src="/js/plugins/citypicker/distpicker.js"></script>-->
 
 <script type="text/javascript" src="/js/plugins/upload/uploadPreview.js"></script>
 
@@ -180,7 +185,7 @@ $(function(){
                     <div class="person-info">
                         <div class="person-photo"><img src="img/_/photo.png" alt=""></div>
                         <div class="person-account">
-                            <span class="name">Michelle</span>
+                            <span class="name">{{username}}</span>
                             <span class="safe">账户安全</span>
                         </div>
                         <div class="clearfix"></div>
@@ -223,27 +228,28 @@ $(function(){
                                     <div class="control-group">
                                         <label for="inputName" class="control-label">昵称：</label>
                                         <div class="controls">
-                                            <input type="text" id="inputName" name="email" placeholder="昵称">
+                                            <input type="text" id="inputName" name="email" ng-model="userInfo.nickName" placeholder="昵称">
                                         </div>
                                     </div>
                                     <div class="control-group">
                                         <label for="inputGender" class="control-label">性别：</label>
                                         <div class="controls">
-                                            <label data-toggle="radio" class="radio-pretty inline">
-                                            <input type="radio" name="gender" value="1"><span>男</span>
-                                        </label>
-                                            <label data-toggle="radio" class="radio-pretty inline">
+                                          <!--  <label data-toggle="radio" class="radio-pretty inline">
+                                        </label>-->
+                                            <input type="radio" name="gender" value="1" checked="checked"><span>男</span>
                                             <input type="radio" name="gender" value="2"><span>女</span>
-                                        </label>
+                                        <!--    <label data-toggle="radio" class="radio-pretty inline">
+                                        </label>-->
                                         </div>
                                     </div>
                                     <div class="control-group">
                                         <label for="inputPassword" class="control-label">生日：</label>
-                                        <div class="controls">
+                                       <!-- <div class="controls">
                                             <select id="select_year2" rel="1990"></select>年
                                             <select id="select_month2" rel="4"></select>月
                                             <select id="select_day2" rel="3"></select>日
-                                        </div>
+                                        </div>-->
+										<input class="Wdate" type="text" onClick="WdatePicker()">
                                     </div>
 
 
@@ -252,13 +258,19 @@ $(function(){
                                         <div class="controls">
                                             <div data-toggle="distpicker">
                                                 <div class="form-group area">
-                                                    <select class="form-control" id="province1"></select>
+													<select class="form-control" id="province1" ng-model="provinces.provinceId" ng-options="p.provinceId as p.province for p in provinces ">
+														<option value="" selected="selected" >==请选择省==</option>
+													</select>
                                                 </div>
                                                 <div class="form-group area">
-                                                    <select class="form-control" id="city1"></select>
+                                                    <select class="form-control" id="city1" ng-model="cities.cityId" ng-options="c.cityId as c.city for c in cities ">
+														<option value="">==请选择市==</option>
+													</select>
                                                 </div>
-                                                <div class="form-group area">
-                                                    <select class="form-control" id="district1"></select>
+                                                <div class="form-group area" >
+                                                    <select class="form-control" ng-model="areas.areaId" id="district1">
+														<option value="">==请选择区==</option>
+													</select>
                                                 </div>
                                             </div>
                                         </div>
@@ -279,7 +291,7 @@ $(function(){
                                     <div class="control-group">
                                         <label for="sanwei" class="control-label"></label>
                                         <div class="controls">
-                                            <button type="submit" class="sui-btn btn-primary">立即注册</button>
+                                            <button type="submit" class="sui-btn btn-primary" ng-click="saveOrUpdate()">保存</button>
                                         </div>
                                     </div>
                                 </form>
