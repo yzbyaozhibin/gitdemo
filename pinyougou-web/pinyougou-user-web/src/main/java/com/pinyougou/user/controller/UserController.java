@@ -2,24 +2,19 @@ package com.pinyougou.user.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.common.pojo.PageResult;
-import com.pinyougou.pojo.PayLog;
+import com.pinyougou.pojo.*;
+import com.pinyougou.service.*;
+import com.pinyougou.pojo.Address;
 import com.pinyougou.pojo.Cities;
 import com.pinyougou.pojo.Provinces;
 import com.pinyougou.pojo.User;
-import com.pinyougou.service.OrderService;
-import com.pinyougou.service.PayLogService;
-import com.pinyougou.service.PayService;
-import com.pinyougou.service.CitiesService;
-import com.pinyougou.service.ProvincesService;
-import com.pinyougou.service.UserService;
+import com.pinyougou.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +35,8 @@ public class UserController {
     private ProvincesService provincesService;
     @Reference(timeout = 10000)
     private CitiesService citiesService;
+    @Reference(timeout = 10000)
+    private AreasService areasService;
 
     @Reference(timeout = 10000)
     private OrderService orderService;
@@ -51,6 +48,13 @@ public class UserController {
     private PayService payService;
     @Reference(timeout = 10000)
     private PayLogService payLogService;
+
+    @Reference(timeout = 10000)
+    private CartService cartService;
+
+    @Reference(timeout = 10000)
+    private AddressService addressService;
+
 
     @PostMapping("/save")
     public Boolean save(@RequestBody User user,String code) {
@@ -143,6 +147,101 @@ public class UserController {
     public List<Cities> findCitiesByParentId(@RequestParam(value = "parentId") String parentId){
         return citiesService.findCitiesByParentId(parentId);
     }
+
+    @GetMapping("/findAreasByParentId")
+    public List<Areas> findAreasByParentId(@RequestParam(value = "parentId") String parentId){
+        return areasService.findAreasByParentId(parentId);
+    }
+
+    @PostMapping("/saveOrUpdate")
+    public Boolean saveOrUpdate(@RequestBody User user){
+        try{
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            user.setUsername(username);
+            userService.saveUserInfo(user);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+    @GetMapping("/findUserInfo")
+    public User findUserInfo(User user){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        user.setUsername(username);
+        return userService.findByUserName(user);
+    }
+
+    @GetMapping("/addPic")
+    public Boolean addPic(String headPic){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.addPicUrl(username,headPic);
+    }
+
+    //添加购物车
+    @GetMapping("/addToCarts")
+    public Boolean addToCarts(Long itemId, Integer num) {
+        try {
+            String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+            cartService.addItemToCartByRedis(userId, itemId, num);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    //获取地址
+    @GetMapping("/getAddress")
+    public List<Address> getAddress() {
+        try {
+            String userId = request.getRemoteUser();
+            return addressService.findByUserId(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //更新地址
+    @PostMapping("/updateAddress")
+    public Boolean update(@RequestBody Address address){
+        try {
+            String userId = request.getRemoteUser();
+            address.setUserId(userId);
+            addressService.update(address);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //保存地址
+    @PostMapping("/saveAddress")
+    public Boolean save(@RequestBody Address address){
+        try {
+            String userId = request.getRemoteUser();
+            address.setUserId(userId);
+            addressService.save(address);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    @GetMapping("/getProvince")
+    public String getProvince(String provinceId){
+        return provincesService.findProvinceName(provinceId);
+    }
+
+    @GetMapping("/getCity")
+    public String getCity(String cityId){
+        return citiesService.findCityName(cityId);
+    }
+
 
     //修改密码
     @PostMapping("/changePW")

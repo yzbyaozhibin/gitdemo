@@ -40,4 +40,10 @@ public interface UserService {
     User selectUser(String username);
 	//根据用户名更改密码
 	void updatePassWord(String newPassword, String username);
+	/**保存用户信息*/
+	void saveUserInfo(User user);
+
+    User findByUserName(User user);
+
+    Boolean addPicUrl(String username, String headPic);
 }

@@ -6,13 +6,11 @@
     <link rel="icon" href="assets/img/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/css/webbase.css"/>
     <link rel="stylesheet" type="text/css" href="/css/pages-seckillOrder.css"/>
-    <script src="plugins/angularjs/angular.min.js"></script>
+	<script src="plugins/angularjs/angular.min.js"></script>
     <script src="js/base.js"></script>
     <script src="js/service/baseService.js"></script>
     <script src="js/controller/indexController.js"></script>
     <script src="js/controller/homeIndexController.js"></script>
-
-
 
 </head>
 <body ng-app="pinyougou" ng-controller="homeIndexController" ng-init="showUser();search()">
@@ -209,21 +207,33 @@ $(function(){
                         </div>
                         <div class="order-detail">
                             <div class="orders" >
+                                <div class="choose-order">
+                                    <div class="sui-pagination pagination-large top-pages">
+                                        <ul>
+                                            <li class="prev {{page == 1?'disabled':''}}">
+                                                <a href="javascript:;" ng-click="searchPage(page-1)">«上一页</a>
+                                            </li>
+
+                                            <li class="next {{page ==totalPages?'disabled':''}}" >
+                                                <a href="javascript:;" ng-click="searchPage(page+1)">下一页»</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                                 <!--order1-->
-                                <div ng-repeat="orderMap in dataList">
+                                <div ng-repeat="paylogMap in dataList">
                                 <div class="choose-title" >
-                                    <label data-toggle="checkbox" >
-                                           <input type="checkbox" ><span>{{changeTime(orderMap.order.createTime)}}&nbsp;&nbsp;订单编号：{{orderMap.order.orderId}}&nbsp;   店铺：{{orderMap.order.sellerId}}&nbsp; &nbsp;<a title="联系客服">客服</a></span>
+                                    <label data-toggle="checkbox" class="checkbox-pretty ">
+                                           <input type="checkbox" checked="checked" ><span>{{changeTime(paylogMap.payLog.createTime)}}&nbsp;&nbsp;订单编号：{{changeId(paylogMap.payLog.outTradeNo)}}&nbsp;   店铺：{{paylogMap.orderItems.length==1?paylogMap.order.sellerId:'品优购'}}&nbsp; &nbsp;<a title="联系客服">客服</a></span>
                                      </label>
 									  <a class="sui-btn btn-info share-btn">分享</a>
                                 </div>
                                 <table class="sui-table table-bordered order-datatable" >
                                     <tbody>
-                                        <tr ng-repeat="item in orderMap.orderItem">
+                                        <tr ng-repeat="item in paylogMap.orderItem">
                                             <td width="35%">
                                                 <div class="typographic" ng-click="jumpToOrderItem(item.goodsId)" ><img src="{{item.picPath}}" width="60" height="60" />
                                                     <a href="#" class="block-text">{{item.title}}</a>
-                                                    <span class="guige">规格：</span>
                                                 </div>
                                             </td>
                                             <td width="5%" class="center">
@@ -236,22 +246,28 @@ $(function(){
                                             <td width="8%" class="center">
                                                
                                             </td>
-                                            <td width="10%" class="center" rowspan="{{orderMap.orderItem.length}}" ng-if="$index==0"  >
+                                            <td width="10%" class="center" rowspan="{{paylogMap.orderItem.length}}" ng-if="$index==0"  >
                                                 <ul class="unstyled">
                                                     <li>¥{{item.totalFee.toFixed(2)}}</li>
                                                     <li>（含运费：￥0.00 )</li>
                                                 </ul>
                                             </td>
-                                            <td width="10%" class="center" rowspan="{{orderMap.orderItem.length}}" ng-if="$index==0">
+                                            <td width="10%" class="center" rowspan="{{paylogMap.orderItem.length}}" ng-if="$index==0">
                                                 <ul class="unstyled">
-                                                    <li>等待卖家付款</li>
-                                                    <li><a href="orderDetail.html" class="btn">订单详情 </a></li>
+                                                    <li ng-if="paylogMap.order.status=='1'">等待卖家付款 </li>
+                                                    <li ng-if="paylogMap.order.status=='2'">订单已完成 </li>
+                                                    <li ng-if="paylogMap.order.status=='3'">等待发货 </li>
+                                                    <li ng-if="paylogMap.order.status=='3'">已发货 </li>
+                                                    <li ng-if="paylogMap.order.status=='5'">交易完成 </li>
+                                                    <li ng-if="paylogMap.order.status=='6'">交易关闭</li>
+                                                    <li ng-if="paylogMap.order.status=='7'">待评价</li>
+                                                    <li><a href="javascript:;" class="btn">订单详情 </a></li>
                                                 </ul>
                                             </td>
-                                            <td width="10%" class="center" rowspan="{{orderMap.orderItem.length}}" ng-if="$index==0" >
+                                            <td width="10%" class="center" rowspan="{{paylogMap.orderItem.length}}" ng-if="$index==0" >
                                                 <div class="unstyled">
-													<a href="javascript:;" ng-click="goToPay(orderMap.order.orderId,item.totalFee)" class="sui-btn btn-info" ng-if="orderMap.order.status=='1'">立即付款</a>
-                                                    <a href="" class="sui-btn btn-info" ng-if="orderMap.order.status !='1'">立即购买</a>
+													<a href="javascript:;" ng-click="goToPay(paylogMap.payLog.outTradeNo,paylogMap.payLog.totalFee)" class="sui-btn btn-info" ng-if="paylogMap.order.status=='1'">立即付款</a>
+                                                    <a href="javascript:;" ng-click="goToCart(paylogMap.orderItem)" class="sui-btn btn-info" ng-if="paylogMap.order.status !='1'">立即购买</a>
                                                     <br/>
                                                     <span>取消订单</span>
                                                 </div>

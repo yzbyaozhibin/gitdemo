@@ -1,5 +1,6 @@
 package com.pinyougou.service;
 
+import com.pinyougou.pojo.Areas;
 import com.pinyougou.pojo.Cities;
 import java.util.List;
 import java.io.Serializable;
@@ -32,4 +33,8 @@ public interface CitiesService {
 	List<Cities> findByPage(Cities cities, int page, int rows);
 
 	List<Cities> findCitiesByParentId(String parentId);
+
+
+
+    String findCityName(String cityId);
 }

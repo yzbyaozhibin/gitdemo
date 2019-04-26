@@ -48,4 +48,13 @@ public class ProvincesServiceImpl implements ProvincesService {
     public List<Provinces> findByPage(Provinces provinces, int page, int rows) {
         return null;
     }
+
+    @Override
+    public String findProvinceName(String provinceId) {
+        try{
+          return   provincesMapper.findProvinceName(provinceId);
+        }catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
+    }
 }
