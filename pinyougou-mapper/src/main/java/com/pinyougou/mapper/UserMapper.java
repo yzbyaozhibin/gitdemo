@@ -15,6 +15,7 @@ public interface UserMapper extends Mapper<User>{
 
     @Update("update tb_user set nick_name =#{nickName},sex = #{sex},birthday=#{birthday}, address=#{address} where username=#{username}")
     void saveUserInfo(User user);
+
     @Select("select * from tb_user where username = #{username}")
     User findByUserName(User user);
 }

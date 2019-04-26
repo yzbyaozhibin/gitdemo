@@ -132,7 +132,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean addPicUrl(String username, String headPic) {
-       return true;
+       try{
+           Example example = new Example(User.class);
+           Example.Criteria criteria = example.createCriteria();
+           criteria.andEqualTo("username",username);
+           List<User> users = userMapper.selectByExample(example);
+           User user = users.get(0);
+           user.setHeadPic(headPic);
+           userMapper.updateByPrimaryKeySelective(user);
+           return true;
+       }catch (Exception e){
+           e.printStackTrace();
+       }
+       return false;
     }
 
 

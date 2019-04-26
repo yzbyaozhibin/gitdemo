@@ -168,7 +168,8 @@ public class UserController {
     public User findUserInfo(User user){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         user.setUsername(username);
-        return userService.findByUserName(user);
+        User user1 = userService.findByUserName(user);
+        return user1;
     }
 
     @GetMapping("/addPic")
@@ -176,6 +177,7 @@ public class UserController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userService.addPicUrl(username,headPic);
     }
+
 
     //添加购物车
     @GetMapping("/addToCarts")
