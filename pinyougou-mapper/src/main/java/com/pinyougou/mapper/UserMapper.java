@@ -1,5 +1,7 @@
 package com.pinyougou.mapper;
 
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import tk.mybatis.mapper.common.Mapper;
 
 import com.pinyougou.pojo.User;
@@ -10,7 +12,10 @@ import com.pinyougou.pojo.User;
  * @version 1.0
  */
 public interface UserMapper extends Mapper<User>{
-
-
-
+    //根据用户名查询用户
+    @Select("select * from tb_user where username=#{username}")
+    User findUsernameByUser(String username);
+    //根据用户名更改密码
+    @Update("update tb_user set password=#{password} where username=#{username}")
+    void updatePassword(User user);
 }

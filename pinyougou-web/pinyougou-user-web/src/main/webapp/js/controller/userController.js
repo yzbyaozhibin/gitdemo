@@ -1,6 +1,6 @@
 /** 定义控制器层 */
 app.controller('userController', function($scope,$timeout,baseService){
-
+    $controller('indexController',{$scope:$scope});
     $scope.user = {};
     $scope.confirmPassword = "";
     $scope.code = "";
@@ -44,5 +44,25 @@ app.controller('userController', function($scope,$timeout,baseService){
         $timeout(function () {
             $scope.countDown(count);
         },1000)
+    }
+
+    $scope.changePw=function () {
+        if($scope.newPassword == $scope.upsure && $scope.newPassword){
+            if($scope.pass){
+                baseService.sendPost("/user/changePW",$scope.user).then(function (response) {
+                    if (response.data) {
+                        alert("修改密码成功！！！");
+                        $scope.user={};
+                        $scope.upsure="";
+                    } else {
+                        $("#originalPassword").html("原始密码错误");
+                    }
+                });
+            }else{
+                $("#originalPassword").html("原始密码不能为空");
+            }
+        }else{
+            $("#newPassword").html("新的密码不能为空");
+        }
     }
 });

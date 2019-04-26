@@ -15,6 +15,7 @@ import com.pinyougou.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -141,6 +142,22 @@ public class UserController {
     @GetMapping("/findCitiesByParentId")
     public List<Cities> findCitiesByParentId(@RequestParam(value = "parentId") String parentId){
         return citiesService.findCitiesByParentId(parentId);
+    }
+
+    //修改密码
+    @PostMapping("/changePW")
+    public Boolean changePW(@RequestBody Map userMap, HttpServletRequest request){
+        String pass = (String) userMap.get("pass");
+        String pass1 = DigestUtils.md5DigestAsHex(pass.getBytes());
+        String username = request.getRemoteUser();
+        User user =userService.selectUser(username);
+        String password = user.getPassword();
+        if(pass1.equals(password)){
+            userService.updatePassWord((String)userMap.get("newPassword"),username);
+            return true;
+
+        }
+        return false;
     }
 
 

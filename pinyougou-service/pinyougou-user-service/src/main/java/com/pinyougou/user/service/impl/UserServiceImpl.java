@@ -110,6 +110,19 @@ public class UserServiceImpl implements UserService {
         String code1 = (String) redisTemplate.boundValueOps("code").get();
         return StringUtils.isNotBlank(code1)&&code1.equals(code);
     }
+    //根据用户名查询用户
+    @Override
+    public User selectUser(String username) {
+        return userMapper.findUsernameByUser(username);
+    }
+    //根据用户名更改密码
+    @Override
+    public void updatePassWord(String newPassword, String username) {
+        User user=new User();
+        user.setPassword(DigestUtils.md5Hex(newPassword));
+        user.setUsername(username);
+        userMapper.updatePassword(user);
+    }
 
 
 }
