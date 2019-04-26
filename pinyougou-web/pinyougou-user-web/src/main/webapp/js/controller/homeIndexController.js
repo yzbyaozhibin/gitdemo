@@ -1,7 +1,7 @@
-app.controller("homeIndexController",function ($scope, $controller,$location,$interval,baseService) {
+app.controller("homeIndexController",function ($scope,$controller,$location,$interval,baseService) {
     $controller("indexController",{$scope:$scope});
-    $scope.page="1";
-    $scope.rows="5";
+    $scope.page=1;
+    $scope.rows=5;
     $scope.search = function () {
         baseService.sendGet("/user/getUserOrder?page="+$scope.page+"&rows="+$scope.rows).then(function (response) {
             //数据
@@ -36,6 +36,11 @@ app.controller("homeIndexController",function ($scope, $controller,$location,$in
        return date.Format("yyyy-MM-dd hh:mm:ss");
 
     };
+
+
+    $scope.changeId=function (id) {
+        return BigInt(id);
+    }
     $scope.showPage = function (page) {
         $scope.page = page;
         $scope.pageNum = [];
@@ -70,9 +75,11 @@ app.controller("homeIndexController",function ($scope, $controller,$location,$in
     $scope.searchPage = function (page) {
         page = parseInt(page);
         if (page >= 1 && page <= $scope.totalPages&& page != $scope.page) {
+            alert(1);
             $scope.page = page;
             $scope.search();
         }
+
     };
 
     //商品点击事件跳转至详情页
@@ -101,7 +108,7 @@ app.controller("homeIndexController",function ($scope, $controller,$location,$in
             baseService.sendGet("/user/getStatus?outTradeNo=" + outTradeNo).then(function (value) {
                 $scope.status = value.data.status;
                 if ($scope.status == "SUCCESS") {
-                    baseService.sendGet("/user/updatePayLog?transactionId=" + value.data.transactionId);
+                    baseService.sendGet("/user/updatePayLog?outTradeNo=" + outTradeNo+"&transactionId=" + value.data.transactionId);
                     $interval.cancel(timer);
                     location.href = "/paysuccess.html?totalFee=" + $scope.money;
                 }
@@ -115,4 +122,19 @@ app.controller("homeIndexController",function ($scope, $controller,$location,$in
             $scope.tips = "二维码已过期，刷新页面重新获取二维码。";
         });
     };
+
+
+    //立即购买点击事件
+    $scope.goToCart=function (orderItems) {
+        for (var i = 0; i < orderItems.length; i++) {
+            var item = orderItems[i];
+            baseService.sendGet("/user/addToCarts?itemId=" + item.itemId + "&num=" + item.num)
+                .then(function (response) {
+
+            })
+            location.href="http://cart.pinyougou.com";
+        };
+
+
+    }
 });
