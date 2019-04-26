@@ -122,10 +122,10 @@ public class UserController {
     }
 
     @GetMapping("/updatePayLog")
-    public Boolean updatePayLog(String transactionId) {
+    public Boolean updatePayLog(String outTradeNo, String transactionId) {
         try {
             String userId = request.getRemoteUser();
-            payLogService.updatePayLog(userId,transactionId);
+            payLogService.updatePayLog(userId,outTradeNo,transactionId);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
