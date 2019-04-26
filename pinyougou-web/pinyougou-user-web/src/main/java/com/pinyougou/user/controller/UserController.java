@@ -2,6 +2,7 @@ package com.pinyougou.user.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.common.pojo.PageResult;
+import com.pinyougou.pojo.Address;
 import com.pinyougou.pojo.Cities;
 import com.pinyougou.pojo.Provinces;
 import com.pinyougou.pojo.User;
@@ -45,6 +46,10 @@ public class UserController {
 
     @Reference(timeout = 10000)
     private CartService cartService;
+
+    @Reference(timeout = 10000)
+    private AddressService addressService;
+
 
     @PostMapping("/save")
     public Boolean save(@RequestBody User user,String code) {
@@ -138,7 +143,6 @@ public class UserController {
         return citiesService.findCitiesByParentId(parentId);
     }
 
-
     //添加购物车
     @GetMapping("/addToCarts")
     public Boolean addToCarts(Long itemId, Integer num) {
@@ -151,6 +155,58 @@ public class UserController {
             return false;
         }
     }
+
+    //获取地址
+    @GetMapping("/getAddress")
+    public List<Address> getAddress() {
+        try {
+            String userId = request.getRemoteUser();
+            return addressService.findByUserId(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //更新地址
+    @PostMapping("/updateAddress")
+    public Boolean update(@RequestBody Address address){
+        try {
+            String userId = request.getRemoteUser();
+            address.setUserId(userId);
+            addressService.update(address);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //保存地址
+    @PostMapping("/saveAddress")
+    public Boolean save(@RequestBody Address address){
+        try {
+            String userId = request.getRemoteUser();
+            address.setUserId(userId);
+            addressService.save(address);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    @GetMapping("/getProvince")
+    public String getProvince(String provinceId){
+        return provincesService.findProvinceName(provinceId);
+    }
+
+    @GetMapping("/getCity")
+    public String getCity(String cityId){
+        return citiesService.findCityName(cityId);
+    }
+
 
 
 }

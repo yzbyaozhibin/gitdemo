@@ -32,4 +32,6 @@ public interface CitiesService {
 	List<Cities> findByPage(Cities cities, int page, int rows);
 
 	List<Cities> findCitiesByParentId(String parentId);
+
+    String findCityName(String cityId);
 }
