@@ -33,8 +33,11 @@ app.controller("cartController", function ($scope, $controller, baseService) {
     //             "totalFee": 11596
     //         }]}];
 
-    //初始化所有check
     // --------------------------------------------------复选框开始---------------------------------------------
+    //初始化所有check
+    $scope.checkItemStatus = {};
+    $scope.checkSellerStatus = {};
+    $scope.checkAll = false;
     $scope.initCheck = function (cartList) {
         $scope.checkAll = false;
         for (var i = 0; i < cartList.length; i++) {
@@ -110,13 +113,11 @@ app.controller("cartController", function ($scope, $controller, baseService) {
         }
     };
 
-    $scope.checkItemStatus = {};
-    $scope.checkAll = false;
+
     $scope.checkItem = function (cart, orderItem) {
         return $scope.checkItemStatus[orderItem.itemId] || $scope.checkAll;
     };
 
-    $scope.checkSellerStatus = {};
     $scope.checkSeller = function (cart) {
         return $scope.checkSellerStatus[cart.sellerId] || $scope.checkAll;
     };
@@ -151,7 +152,7 @@ app.controller("cartController", function ($scope, $controller, baseService) {
                 $scope.choseCart.push($scope.newCart);
                 $scope.updateOrderItemsByCart($scope.newCart.orderItems, true);
                 $scope.checkSellerStatus[cart.sellerId] = true;
-                $scope.checkAll = false;
+                $scope.checkAll = true;
             }
         }
         $scope.checkAllFn();
