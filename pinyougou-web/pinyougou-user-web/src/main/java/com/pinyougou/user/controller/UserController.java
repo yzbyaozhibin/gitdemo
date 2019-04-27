@@ -195,7 +195,7 @@ public class UserController {
 
     //获取地址
     @GetMapping("/getAddress")
-    public List<Address> getAddress() {
+    public List<Map<String,Object>> getAddress() {
         try {
             String userId = request.getRemoteUser();
             return addressService.findByUserId(userId);
@@ -231,22 +231,6 @@ public class UserController {
             e.printStackTrace();
         }
         return false;
-    }
-
-
-    @GetMapping("/getProvince")
-    public String getProvince(String provinceId){
-        return provincesService.findProvinceName(provinceId);
-    }
-
-    @GetMapping("/getCity")
-    public String getCity(String cityId){
-        return citiesService.findCityName(cityId);
-    }
-
-    @GetMapping("/getAreas")
-    public String getAreas(String areaId){
-        return areasService.findAreaName(areaId);
     }
 
 

@@ -85,6 +85,7 @@ public class PayServiceImpl implements PayService {
             Map<String, Object> map = new HashMap<>();
             map.put("status", resMap.get("trade_state"));
             map.put("transactionId",resMap.get("transaction_id"));
+            System.out.println(map.get("transactionId"));
             return map;
         } catch (Exception e) {
             throw new RuntimeException(e);

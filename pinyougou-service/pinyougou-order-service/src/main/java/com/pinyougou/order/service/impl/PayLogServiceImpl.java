@@ -88,33 +88,36 @@ public class PayLogServiceImpl implements PayLogService {
     @Override
     public void updatePayLog(String userId, String outTradeNo, String transactionId) {
         try {
-            PayLog payLog = (PayLog) redisTemplate.boundHashOps("payLog").get(userId);
-            payLog.setPayTime(new Date());
-            payLog.setTradeState("1");
-            payLog.setTransactionId(transactionId);
-            payLogMapper.updateByPrimaryKeySelective(payLog);
-            String[] orderIds = payLog.getOrderList().split(",");
-            for (String orderId : orderIds) {
-                Order order = new Order();
-                order.setOrderId(Long.valueOf(orderId));
-                order.setUpdateTime(new Date());
-                order.setPaymentTime(order.getUpdateTime());
-                order.setStatus("2");
-                orderMapper.updateByPrimaryKeySelective(order);
-            }
-            //移除支付日志
-            List<PayLog> payLogs = (List<PayLog>) redisTemplate.boundHashOps("payLog").get(payLog.getUserId());
+            List<PayLog> payLogs= (List<PayLog>) redisTemplate.boundHashOps("payLog").get(userId);
             if (payLogs != null && payLogs.size() > 0) {
-                for (PayLog payLog1 : payLogs) {
-                    if (payLog1.getOutTradeNo().equals(outTradeNo)) {
-                        payLogs.remove(payLog1);
+                for (int i = 0; i < payLogs.size(); i++) {
+                    PayLog payLog = payLogs.get(i);
+                    if (payLog.getOutTradeNo().equals(outTradeNo)) {
+                        //更新日志
+                        payLog.setPayTime(new Date());
+                        payLog.setTradeState("1");
+                        payLog.setTransactionId(transactionId);
+                        payLogMapper.updateByPrimaryKeySelective(payLog);
+                        //更新订单
+                        String[] orderIds = payLog.getOrderList().split(",");
+                        for (String orderId : orderIds) {
+                            Order order = new Order();
+                            order.setOrderId(Long.valueOf(orderId));
+                            order.setUpdateTime(new Date());
+                            order.setPaymentTime(order.getUpdateTime());
+                            order.setStatus("2");
+                            orderMapper.updateByPrimaryKeySelective(order);
+                        }
+                        //移除redis日志
+                        payLogs.remove(payLog);
                     }
                 }
             }
+
             if (payLogs.size() <= 0) {
-                redisTemplate.boundHashOps("payLog").delete(payLog.getUserId());
+                redisTemplate.boundHashOps("payLog").delete(userId);
             }
-            redisTemplate.boundHashOps("payLog").put(payLog.getUserId(), payLogs);
+            redisTemplate.boundHashOps("payLog").put(userId, payLogs);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

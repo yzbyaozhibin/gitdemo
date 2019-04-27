@@ -61,7 +61,8 @@ app.controller("indexController",function ($scope,baseService) {
     $scope.saveOrUpdate = function () {
         baseService.sendPost("/user/saveOrUpdate",$scope.userInfo).then(function (response) {
             if(response.data){
-                $scope.userInfo={};
+                alert("保存成功！")
+               // $scope.userInfo={};
             }else {
                 alert("保存失败！")
             }
@@ -73,6 +74,11 @@ app.controller("indexController",function ($scope,baseService) {
     $scope.findUserInfo = function () {
         baseService.sendGet("/user/findUserInfo").then(function (response) {
             $scope.userInfo = response.data;
+            $scope.userInfo.address =  JSON.parse($scope.userInfo.address);
+            if ($scope.userInfo.birthday != null) {
+                var date = new Date($scope.userInfo.birthday);
+                $scope.userInfo.birthday= date.getFullYear() + '-' + (date.getMonth() + 1>9?date.getMonth() + 1:'0'+(date.getMonth() + 1)) + '-' +(date.getDate()>9?date.getDate():'0'+date.getDate()) ;
+            }
         })
     };
    /* $scope.show =function (entity) {
@@ -100,6 +106,7 @@ app.controller("indexController",function ($scope,baseService) {
             })
         }
 
+        $scope.trans
 
 
 });

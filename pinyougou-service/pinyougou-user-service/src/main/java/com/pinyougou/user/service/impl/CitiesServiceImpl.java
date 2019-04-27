@@ -54,10 +54,6 @@ public class CitiesServiceImpl implements CitiesService {
         return citiesMapper.findCitiesByParentId(parentId);
     }
 
-    @Override
-    public String findCityName(String cityId) {
 
-        return citiesMapper.findCityName(cityId);
-    }
 
 }

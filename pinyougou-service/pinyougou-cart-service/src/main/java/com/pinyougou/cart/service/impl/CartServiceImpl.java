@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * CartServiceImpl
@@ -119,6 +120,8 @@ public class CartServiceImpl implements CartService {
     public void saveChoseCart(String userId,List<Cart> carts) {
         try {
             redisTemplate.boundHashOps("tempCartList").put(userId, carts);
+            //设置过期时间
+            redisTemplate.expire("tempCartList",60, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

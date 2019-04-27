@@ -8,9 +8,13 @@
     <link rel="stylesheet" type="text/css" href="css/webbase.css"/>
     
 	<link rel="stylesheet" type="text/css" href="css/pages-seckillOrder.css"/>
+	<script src="plugins/angularjs/angular.min.js"></script>
+	<script src="js/base.js"></script>
+	<script src="js/service/baseService.js"></script>
+	<script src="js/controller/indexController.js"></script>
 
 </head>
-<body>
+<body ng-app="pinyougou" ng-controller="indexController" ng-init="showUser()">
     <!-- 头部栏位 -->
     <!--页面顶部-->
 <div id="nav-bottom">
@@ -20,8 +24,10 @@
 			<div class="py-container">
 				<div class="shortcut">
 					<ul class="fl">
-						<li class="f-item">品优购欢迎您！</li>
-						<li class="f-item">请<a href="login.html" target="_blank">登录</a>　<span><a href="register.html" target="_blank">免费注册</a></span></li>
+						<li class="f-item">{{username}}&nbsp;品优购欢迎您！&nbsp;<a
+								href="http://sso.pinyougou.com/logout?service=http://www.pinyougou.com/">退出</a></li>
+						<!--<li class="f-item">请<a href="login.html" target="_blank">登录</a>　<span>-->
+						<!--<a href="http://user.pinyougou.com/register.html">免费注册</a></span></li>-->
 					</ul>
 					<ul class="fr">
 						<li class="f-item">我的订单</li>
@@ -156,10 +162,10 @@ $(function(){
 
                     <div class="person-info">
                         <div class="person-photo"><img src="img/_/photo.png" alt=""></div>
-                        <div class="person-account">
-                            <span class="name">Michelle</span>
-                            <span class="safe">账户安全</span>
-                        </div>
+						<div class="person-account">
+							<span class="name">{{username}}</span>
+							<span class="safe"><a href="/logout">退出登录 </a></span>
+						</div>
                         <div class="clearfix"></div>
                     </div>
                      <div class="list-items">
