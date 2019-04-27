@@ -16,8 +16,8 @@ app.controller("orderController", function ($scope, $controller, $interval, $loc
     $scope.findTempCart = function () {
         baseService.sendGet("/cart/findTempCart").then(function (value) {
             $scope.res = {total: 0, totalPrice: 0};
-            $scope.cartList = value.data;
-            $scope.getTotal($scope.cartList);
+            $scope.choseCart = value.data;
+            $scope.getTotal();
         })
     };
 
@@ -32,7 +32,7 @@ app.controller("orderController", function ($scope, $controller, $interval, $loc
     };
 
     $scope.saveOrder = function () {
-        $scope.orderInfo = {'order': $scope.order, 'tempCartList': $scope.cartList};
+        $scope.orderInfo = {'order': $scope.order, 'tempCartList': $scope.choseCart};
         baseService.sendPost("/order/saveOrder", $scope.orderInfo).then(function (value) {
             if ($scope.order.paymentType == '2') {
                 location.href = "/order/paysuccess.html";

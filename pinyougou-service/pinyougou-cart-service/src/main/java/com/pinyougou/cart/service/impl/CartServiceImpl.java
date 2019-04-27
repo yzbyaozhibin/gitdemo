@@ -57,7 +57,7 @@ public class CartServiceImpl implements CartService {
                 } else {
                     orderItem.setNum(orderItem.getNum() + num);
                     orderItem.setTotalFee(new BigDecimal(item.getPrice().doubleValue() * orderItem.getNum()));
-                    if (orderItem.getNum() + num <= 0) {
+                    if (orderItem.getNum() <= 0) {
                         orderItems.remove(orderItem);
                     }
                     if (orderItems.size() <= 0) {

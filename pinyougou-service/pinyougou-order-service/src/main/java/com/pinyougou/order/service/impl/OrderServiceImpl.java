@@ -137,25 +137,23 @@ public class OrderServiceImpl implements OrderService {
     private void updateCartListByUserId(List<Cart> tempCartList, String userId) {
         List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps("cartList").get(userId);
         if (cartList != null && cartList.size() > 0) {
-            for (Cart cart : cartList) {//单个商家对应的一个购物车
+            //单个商家对应的一个购物车////
+            for (Cart cart : cartList) {
                 for (Cart cart1 : tempCartList) {
+                    //////////////////////
                     if (cart.getSellerId().equals(cart1.getSellerId())) {
                         if (cart.getOrderItems() != null && cart.getOrderItems().size() > 0) {
-                            //遍历单个商家的购物车,对相应的商品数量-1,
-                            //////////////////
-                            for (OrderItem orderItem : cart.getOrderItems()) {
+                            //遍历单个商家的购物车,移除对相应的商品////
+                            //换成fori循环
+                            List<OrderItem> orderItems = cart.getOrderItems();
+                            for (int i = 0; i < orderItems.size(); i++) {
                                 for (OrderItem orderItem1 : cart1.getOrderItems()) {
-                                    if (orderItem.getItemId().equals(orderItem1.getItemId())) {
-                                        Integer num = orderItem.getNum() - orderItem1.getNum();
-                                        if (num <= 0) {
-                                            cart.getOrderItems().remove(orderItem);
-                                        } else {
-                                            orderItem.setNum(num);
-                                        }
+                                    //////////////////////////////
+                                    if (orderItems.get(i).getItemId().equals(orderItem1.getItemId())) {
+                                        orderItems.remove(orderItems.get(i));
                                     }
                                 }
                             }
-                            //////////////////
                         }
                     }
                 }

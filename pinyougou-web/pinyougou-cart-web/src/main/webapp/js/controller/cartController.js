@@ -204,6 +204,7 @@ app.controller("cartController", function ($scope, $controller, baseService) {
 // --------------------------------------------------复选框结束---------------------------------------------
     $scope.findCart = function () {
         baseService.sendGet("/cart/findCart").then(function (value) {
+            $scope.choseCart = [];
             $scope.res = {total: 0, totalPrice: 0};
             $scope.cartList = value.data;
             // $scope.getTotal($scope.cartList);
