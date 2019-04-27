@@ -6,6 +6,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -19,7 +20,6 @@ import java.util.Map;
 
 /**
  * 生成二维码控制器
- * @author LEE.SIU.WAH
  * @date 2017年12月13日 上午8:40:43
  * @version 1.0
  */
@@ -42,7 +42,7 @@ public class BarCodeController {
 				HttpServletResponse response) throws Exception{
 		/** 判断二维码中URL */
 		if (url == null || "".equals(url)){
-			url = "http://www.jd.com";
+			url = "明明哥，我爱你！";
 		}
 		
 		/** 定义Map集合封装二维码配置信息 */
@@ -61,7 +61,7 @@ public class BarCodeController {
 		 * 第四个参数：生成二维码图片的高度
 		 * 第五个参数：生成二维码需要配置信息
 		 *  */
-		BitMatrix matrix = new MultiFormatWriter().encode(url,
+		BitMatrix matrix = new MultiFormatWriter().encode(url, 
 				BarcodeFormat.QR_CODE, WIDTH, HEIGHT, hints);
 		
 		/** 获取二维码图片真正的宽度  */
@@ -75,7 +75,7 @@ public class BarCodeController {
 		for (int x = 0; x < matrix_width; x++){
 			for (int y = 0; y < matrix_height; y++){
 				/** 通过x、y坐标获取一点的颜色 true: 黑色  false: 白色 */
-				int rgb = matrix.get(x, y) ? 0xFF1493 : 0xFFFFFF;
+				int rgb = matrix.get(x, y) ? 0x030303 : 0xFFFFFF;
 				image.setRGB(x, y, rgb);
 			}
 		}

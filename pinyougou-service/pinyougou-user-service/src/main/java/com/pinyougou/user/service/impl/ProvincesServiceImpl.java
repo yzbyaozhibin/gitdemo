@@ -49,12 +49,4 @@ public class ProvincesServiceImpl implements ProvincesService {
         return null;
     }
 
-    @Override
-    public String findProvinceName(String provinceId) {
-        try{
-          return   provincesMapper.findProvinceName(provinceId);
-        }catch(Exception ex){
-            throw new RuntimeException(ex);
-        }
-    }
 }

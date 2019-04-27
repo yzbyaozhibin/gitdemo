@@ -75,7 +75,6 @@ app.controller("homeIndexController",function ($scope,$controller,$location,$int
     $scope.searchPage = function (page) {
         page = parseInt(page);
         if (page >= 1 && page <= $scope.totalPages&& page != $scope.page) {
-            alert(1);
             $scope.page = page;
             $scope.search();
         }
@@ -89,7 +88,7 @@ app.controller("homeIndexController",function ($scope,$controller,$location,$int
 
     //付款点击事件
     $scope.goToPay=function (id,total) {
-       location.href="pay.html?orderId="+id+"&money="+total*100;
+       location.href="pay.html?orderId="+id+"&money="+total;
     };
 
     //支付页面获取二维码事件
@@ -123,6 +122,9 @@ app.controller("homeIndexController",function ($scope,$controller,$location,$int
         });
     };
 
+    $scope.getTotalFee = function () {
+        return $location.search().totalFee;
+    }
 
     //立即购买点击事件
     $scope.goToCart=function (orderItems) {

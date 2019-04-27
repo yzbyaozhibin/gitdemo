@@ -69,7 +69,7 @@ app.controller("orderController", function ($scope, $controller, $interval, $loc
             baseService.sendGet("/order/getStatus?outTradeNo=" + $scope.outTradeNo).then(function (value) {
                 $scope.status = value.data.status;
                 if ($scope.status == "SUCCESS") {
-                    baseService.sendGet("/order/updatePayLog?outTradeNo =" + $scope.outTradeNo + "&transactionId=" + value.data.transactionId);
+                    baseService.sendGet("/order/updatePayLog?outTradeNo=" + $scope.outTradeNo + "&transactionId=" + value.data.transactionId);
                     $interval.cancel(timer);
                     location.href = "/order/paysuccess.html?totalFee=" + $scope.money;
                 }
