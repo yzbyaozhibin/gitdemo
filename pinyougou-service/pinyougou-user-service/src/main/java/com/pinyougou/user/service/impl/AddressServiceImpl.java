@@ -76,8 +76,9 @@ public class AddressServiceImpl implements AddressService {
         return null;
     }
 
+
     @Override
-    public List<Map<String,Object>> findByUserId(String userId) {
+    public List<Map<String,Object>> findByUserName(String userId) {
         try{
             Example example = new Example(Address.class);
             Example.Criteria criteria = example.createCriteria();
@@ -105,7 +106,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public void setDefaultAddress(Long id,String userId) {
         try{
-            List<Map<String, Object>> dataList = findByUserId(userId);
+            List<Map<String, Object>> dataList = findByUserName(userId);
             Map<String, Object> dataMap = dataList.get(0);
             Address address1 = (Address) dataMap.get("address");
             address1.setIsDefault("0");
@@ -117,5 +118,15 @@ public class AddressServiceImpl implements AddressService {
             throw new RuntimeException(ex);
         }
 
+    }
+
+    @Override
+    public List<Address> findByUserId(String userId) {
+        Example example = new Example(Address.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("userId", userId);
+        example.orderBy("isDefault").desc();
+        List<Address> addressList = addressMapper.selectByExample(example);
+        return addressList;
     }
 }

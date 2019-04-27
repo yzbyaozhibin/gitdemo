@@ -198,7 +198,7 @@ public class UserController {
     public List<Map<String,Object>> getAddress() {
         try {
             String userId = request.getRemoteUser();
-            return addressService.findByUserId(userId);
+            return addressService.findByUserName(userId);
         } catch (Exception e) {
             e.printStackTrace();
         }
