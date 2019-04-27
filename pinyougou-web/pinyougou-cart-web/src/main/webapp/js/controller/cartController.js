@@ -207,6 +207,17 @@ app.controller("cartController", function ($scope, $controller, baseService) {
             $scope.choseCart = [];
             $scope.res = {total: 0, totalPrice: 0};
             $scope.cartList = value.data;
+
+            if ($scope.cartList.length > 0) {
+                $scope.totalShop = 0;
+                for (var i = 0; i < $scope.cartList.length; i++) {
+                    var orderItems = $scope.cartList[i].orderItems;
+                    for (var j = 0; j < orderItems.length; j++) {
+                        $scope.totalShop += orderItems[j].num;
+                    }
+                }
+            }
+
             // $scope.getTotal($scope.cartList);
             $scope.initCheck($scope.cartList);
         })
