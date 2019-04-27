@@ -33,7 +33,9 @@ public interface AddressService {
 	/** 多条件分页查询 */
 	List<Address> findByPage(Address address, int page, int rows);
 
-    List<Map<String,Object>> findByUserId(String userId);
+	List<Address> findByUserId(String userId);
+
+    List<Map<String,Object>> findByUserName(String userId);
 
 	void setDefaultAddress(Long id,String userId);
 }
