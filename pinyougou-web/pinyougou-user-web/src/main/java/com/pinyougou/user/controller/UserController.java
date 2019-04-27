@@ -2,12 +2,16 @@ package com.pinyougou.user.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.common.pojo.PageResult;
+import com.pinyougou.pojo.*;
+import com.pinyougou.service.*;
+import com.pinyougou.pojo.Address;
 import com.pinyougou.pojo.Cities;
 import com.pinyougou.pojo.Provinces;
 import com.pinyougou.pojo.User;
 import com.pinyougou.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +35,8 @@ public class UserController {
     private ProvincesService provincesService;
     @Reference(timeout = 10000)
     private CitiesService citiesService;
+    @Reference(timeout = 10000)
+    private AreasService areasService;
 
     @Reference(timeout = 10000)
     private OrderService orderService;
@@ -45,6 +51,10 @@ public class UserController {
 
     @Reference(timeout = 10000)
     private CartService cartService;
+
+    @Reference(timeout = 10000)
+    private AddressService addressService;
+
 
     @PostMapping("/save")
     public Boolean save(@RequestBody User user,String code) {
@@ -138,6 +148,37 @@ public class UserController {
         return citiesService.findCitiesByParentId(parentId);
     }
 
+    @GetMapping("/findAreasByParentId")
+    public List<Areas> findAreasByParentId(@RequestParam(value = "parentId") String parentId){
+        return areasService.findAreasByParentId(parentId);
+    }
+
+    @PostMapping("/saveOrUpdate")
+    public Boolean saveOrUpdate(@RequestBody User user){
+        try{
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            user.setUsername(username);
+            userService.saveUserInfo(user);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+    @GetMapping("/findUserInfo")
+    public User findUserInfo(User user){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        user.setUsername(username);
+        User user1 = userService.findByUserName(user);
+        return user1;
+    }
+
+    @GetMapping("/addPic")
+    public Boolean addPic(String headPic){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.addPicUrl(username,headPic);
+    }
+
 
     //添加购物车
     @GetMapping("/addToCarts")
@@ -152,5 +193,138 @@ public class UserController {
         }
     }
 
+    //获取地址
+    @GetMapping("/getAddress")
+    public List<Address> getAddress() {
+        try {
+            String userId = request.getRemoteUser();
+            return addressService.findByUserId(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
+    //更新地址
+    @PostMapping("/updateAddress")
+    public Boolean update(@RequestBody Address address){
+        try {
+            String userId = request.getRemoteUser();
+            address.setUserId(userId);
+            addressService.update(address);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //保存地址
+    @PostMapping("/saveAddress")
+    public Boolean save(@RequestBody Address address){
+        try {
+            String userId = request.getRemoteUser();
+            address.setUserId(userId);
+            addressService.save(address);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    @GetMapping("/getProvince")
+    public String getProvince(String provinceId){
+        return provincesService.findProvinceName(provinceId);
+    }
+
+    @GetMapping("/getCity")
+    public String getCity(String cityId){
+        return citiesService.findCityName(cityId);
+    }
+
+    @GetMapping("/getAreas")
+    public String getAreas(String areaId){
+        return areasService.findAreaName(areaId);
+    }
+
+
+    @GetMapping("/deleteAddress")
+    public boolean deleteAddress(Long id){
+        try {
+            addressService.delete(id);
+            return true;
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+
+    @GetMapping("/setDefaultAddress")
+    public boolean setDefaultAddress(Long id,HttpServletRequest request){
+        try {
+            String userId = request.getRemoteUser();
+            addressService.setDefaultAddress(id,userId);
+            return true;
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+
+
+    //修改密码
+    @PostMapping("/changePW")
+    public User changePW(@RequestBody Map<String, Object> userMap, HttpServletRequest request){
+        String password = (String) userMap.get("password");
+        String pass1 = DigestUtils.md5DigestAsHex(password.getBytes());
+        String username = request.getRemoteUser();
+        User user1=userService.selectUser(username);
+
+        String oldPassword = user1.getPassword();
+        if(oldPassword.equals(pass1)){
+            userService.updatePassWord((String) userMap.get("newPassword"),username);
+            user1.setPassword(null);
+            return user1;
+        }
+        return null;
+    }
+
+    //根据用户名或取手机号码
+    @GetMapping("showPhone")
+    public String showPhone(HttpServletRequest request){
+        String username = request.getRemoteUser();
+        User user1 =userService.selectUser(username);
+        String phone = user1.getPhone();
+        return phone;
+    }
+
+    @GetMapping("/checkCode")
+    public Boolean checkCode(String code){
+       return userService.checkSmsCode(code);
+    }
+    @PostMapping("/updatePhone")
+    public Boolean updatePhone(String picCode,String code,@RequestBody User user,HttpServletRequest request){
+        try {
+            String username = request.getRemoteUser();
+            String verify_code = (String) request.getSession().getAttribute("verify_code");
+            if(verify_code.equals(picCode)){
+                if (userService.checkSmsCode(code)){
+                    user.setUsername(username);
+                    userService.update(user);
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

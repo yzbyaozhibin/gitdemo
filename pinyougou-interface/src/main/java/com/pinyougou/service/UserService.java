@@ -36,5 +36,14 @@ public interface UserService {
 	Boolean sendSms(String phone);
 
 	boolean checkSmsCode(String code);
+	//根据用户名得到用户
+    User selectUser(String username);
+	//根据用户名更改密码
+	void updatePassWord(String newPassword, String username);
+	/**保存用户信息*/
+	void saveUserInfo(User user);
 
+    User findByUserName(User user);
+
+    Boolean addPicUrl(String username, String headPic);
 }

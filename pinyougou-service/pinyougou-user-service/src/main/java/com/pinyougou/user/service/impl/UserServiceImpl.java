@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import java.io.Serializable;
 import java.util.*;
@@ -52,7 +53,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(User user) {
-
+        try {
+            userMapper.updateUserPhone(user);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -109,6 +114,54 @@ public class UserServiceImpl implements UserService {
     public boolean checkSmsCode(String code) {
         String code1 = (String) redisTemplate.boundValueOps("code").get();
         return StringUtils.isNotBlank(code1)&&code1.equals(code);
+    }
+    //根据用户名查询用户
+    @Override
+    public User selectUser(String username) {
+        return userMapper.findUsernameByUser(username);
+    }
+    //根据用户名更改密码
+    @Override
+    public void updatePassWord(String newPassword, String username) {
+        User user=new User();
+        user.setPassword(DigestUtils.md5Hex(newPassword));
+        user.setUsername(username);
+        userMapper.updatePassword(user);
+    }
+
+    @Override
+    public void saveUserInfo(User user) {
+        try{
+            userMapper.saveUserInfo(user);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public User findByUserName(User user) {
+        try{
+            return userMapper.findByUserName(user);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Boolean addPicUrl(String username, String headPic) {
+       try{
+           Example example = new Example(User.class);
+           Example.Criteria criteria = example.createCriteria();
+           criteria.andEqualTo("username",username);
+           List<User> users = userMapper.selectByExample(example);
+           User user = users.get(0);
+           user.setHeadPic(headPic);
+           userMapper.updateByPrimaryKeySelective(user);
+           return true;
+       }catch (Exception e){
+           e.printStackTrace();
+       }
+       return false;
     }
 
 

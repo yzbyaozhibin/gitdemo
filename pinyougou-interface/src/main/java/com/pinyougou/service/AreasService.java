@@ -31,4 +31,7 @@ public interface AreasService {
 	/** 多条件分页查询 */
 	List<Areas> findByPage(Areas areas, int page, int rows);
 
+    List<Areas> findAreasByParentId(String parentId);
+
+    String findAreaName(String areaId);
 }
