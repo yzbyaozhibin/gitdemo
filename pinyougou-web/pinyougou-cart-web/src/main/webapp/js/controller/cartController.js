@@ -105,7 +105,7 @@ app.controller("cartController", function ($scope, $controller, baseService) {
         $scope.choseCart.push($scope.newCart);
         $scope.checkItemStatus[orderItem.itemId] = true;
         for (var i = 0; i < $scope.choseCart.length; i++) {
-            if ($scope.choseCart.sellerId == cart.sellerId) {
+            if ($scope.choseCart[i].sellerId == cart.sellerId) {
                 if ($scope.choseCart[i].orderItems.length == cart.orderItems.length) {
                     $scope.checkSellerStatus[cart.sellerId] = true;
                 }
