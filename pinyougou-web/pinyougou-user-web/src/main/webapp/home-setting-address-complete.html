@@ -4,13 +4,17 @@
     <meta charset="UTF-8"/>
     <title>设置-个人信息</title>
     <link rel="icon" href="/assets/img/favicon.ico"/>
-
     <link rel="stylesheet" type="text/css" href="/css/webbase.css"/>
-    
 	<link rel="stylesheet" type="text/css" href="/css/pages-seckillOrder.css"/>
 
+	<script src="plugins/angularjs/angular.min.js"></script>
+	<script src="js/base.js"></script>
+	<script src="js/service/baseService.js"></script>
+	<script src="js/controller/indexController.js"></script>
+	<script src="js/controller/userController.js"></script>
+
 </head>
-<body>
+<body ng-app="pinyougou" ng-controller="userController" ng-init="showUser()" style="display: none">
     <!-- 头部栏位 -->
     <!--页面顶部-->
 <div id="nav-bottom">
@@ -20,8 +24,8 @@
 			<div class="py-container">
 				<div class="shortcut">
 					<ul class="fl">
-						<li class="f-item">品优购欢迎您！</li>
-						<li class="f-item">请<a href="login.html" target="_blank">登录</a>　<span><a href="register.html" target="_blank">免费注册</a></span></li>
+						<li class="f-item" ng-if="username">{{username}},品优购欢迎您！</li>
+						<li class="f-item" ng-if="!username">请<a href="login.html" target="_blank">登录</a>　<span><a href="register.html" target="_blank">免费注册</a></span></li>
 					</ul>
 					<ul class="fr">
 						<li class="f-item">我的订单</li>
@@ -153,9 +157,9 @@ $(function(){
                 <div class="yui3-u-1-6 list">
 
                     <div class="person-info">
-                        <div class="person-photo"><img src="img/_/photo.png" alt=""></div>
+                        <div class="person-photo"><img src="{{headPic}}" alt=""></div>
                         <div class="person-account">
-                            <span class="name">Michelle</span>
+                            <span class="name">{{username}}</span>
                             <span class="safe">账户安全</span>
                         </div>
                         <div class="clearfix"></div>
@@ -401,4 +405,5 @@ $(function(){
 	</div>
 </div>
 <!--页面底部END-->
+<script src="/js/loadBody.js"></script>
 </html>

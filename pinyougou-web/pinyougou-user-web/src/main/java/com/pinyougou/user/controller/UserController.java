@@ -327,4 +327,13 @@ public class UserController {
         }
         return false;
     }
+
+    @GetMapping("/showPic")
+    public Map<String, String>  showPic(HttpServletRequest request){
+        String username = request.getRemoteUser();
+        User user = userService.selectUser(username);
+        Map<String,String> map=new HashMap<>();
+        map.put("headPic",user.getHeadPic());
+        return map;
+    }
 }

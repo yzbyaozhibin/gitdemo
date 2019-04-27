@@ -5,7 +5,12 @@ app.controller("indexController",function ($scope,baseService) {
         baseService.sendGet("/user/showUser").then(function (value) {
             $scope.username = value.data.username;
         })
+        baseService.sendGet("/user/showPic").then(function (value) {
+            $scope.headPic= value.data.headPic;
+        })
+
     };
+
 
     //定义数据结构
     $scope.userInfo = {nickName:'',sex:'',headPic:'', birthday:'',address:{}};
@@ -94,6 +99,7 @@ app.controller("indexController",function ($scope,baseService) {
                 }
             })
         }
+
 
 
 });

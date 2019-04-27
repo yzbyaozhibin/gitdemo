@@ -18,7 +18,7 @@
 	</script>
 
 </head>
-<body ng-app="pinyougou" ng-controller="userController" ng-init="showUser()" >
+<body ng-app="pinyougou" ng-controller="userController" ng-init="showUser()" style="display: none">
 <!-- 头部栏位 -->
 <!--页面顶部-->
 <div id="nav-bottom">
@@ -289,7 +289,7 @@
 			<div class="yui3-u-1-6 list">
 
 				<div class="person-info">
-					<div class="person-photo"><img src="img/_/photo.png" alt=""></div>
+					<div class="person-photo"><img src="{{headPic}}" alt=""></div>
 					<div class="person-account">
 						<span class="name">{{username}}</span>
 						<span class="safe">账户安全</span>
@@ -322,7 +322,7 @@
 				</div>
 			</div>
 			<!--右侧主内容-->
-			<div class="yui3-u-5-6">{{user}}
+			<div class="yui3-u-5-6">
 				<div class="body userSafe">
 					<ul class="sui-nav nav-tabs nav-large nav-primary ">
 						<li class="active"><a href="#one" data-toggle="tab">密码设置</a></li>
@@ -409,9 +409,8 @@
 									</div>
 								</div>
 								<div class="control-group next-btn">
-									<a class="sui-btn btn-primary" ng-click="checkCode()">提交验证码</a>&nbsp;
-									<!--<a class="sui-btn btn-primary" ng-if="isNext" href="home-setting-address-phone.html">下一步</a>-->
-									<a class="sui-btn btn-primary"  href="home-setting-address-phone.html">下一步</a>
+									<a class="sui-btn btn-primary" ng-click="checkCode()" ng-if="!isNext">提交验证码</a>&nbsp;
+									<a class="sui-btn btn-primary" ng-if="isNext" href="home-setting-address-phone.html">下一步</a>
 								</div>
 							</form>
 						</div>
@@ -555,4 +554,5 @@
 	</div>
 </div>
 <!--页面底部END-->
+<script src="/js/loadBody.js"></script>
 </html>
