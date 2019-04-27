@@ -117,8 +117,9 @@ public class OrderServiceImpl implements OrderService {
             if (payLogList == null) {
                 payLogList = new ArrayList<>();
                 payLogList.add(payLog);
+            } else {
+                payLogList.add(payLog);
             }
-            payLogList.add(payLog);
             redisTemplate.boundHashOps("payLog").put(order.getUserId(), payLogList);
             //
             payLogMapper.insertSelective(payLog);
