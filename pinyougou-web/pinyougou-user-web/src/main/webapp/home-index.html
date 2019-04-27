@@ -23,8 +23,8 @@
 			<div class="py-container">
 				<div class="shortcut">
 					<ul class="fl">
-						<li class="f-item">{{username}}品优购欢迎您！&nbsp;<a
-                                href="http://sso.pinyougou.com/logout?service=http://cart.pinyougou.com/">退出</a></li>
+						<li class="f-item">{{username}}&nbsp;品优购欢迎您！&nbsp;<a
+                                href="http://sso.pinyougou.com/logout?service=http://www.pinyougou.com/">退出</a></li>
 						<!--<li class="f-item">请<a href="login.html" target="_blank">登录</a>　<span>-->
 						<!--<a href="http://user.pinyougou.com/register.html">免费注册</a></span></li>-->
 					</ul>
@@ -224,7 +224,8 @@ $(function(){
                                 <div ng-repeat="paylogMap in dataList">
                                 <div class="choose-title" >
                                     <label data-toggle="checkbox" class="checkbox-pretty ">
-                                           <input type="checkbox" checked="checked" ><span>{{changeTime(paylogMap.payLog.createTime)}}&nbsp;&nbsp;订单编号：{{changeId(paylogMap.payLog.outTradeNo)}}&nbsp;   店铺：{{paylogMap.orderItems.length==1?paylogMap.order.sellerId:'品优购'}}&nbsp; &nbsp;<a title="联系客服">客服</a></span>
+                                           <input type="checkbox" checked="checked" ><span>{{changeTime(paylogMap.payLog.createTime)}}&nbsp;&nbsp;
+										订单编号：{{changeId(paylogMap.payLog.outTradeNo)}}&nbsp;   店铺：{{paylogMap.orderItems.length== 1 ? paylogMap.order.sellerId:'品优购'}}&nbsp; &nbsp;<a title="联系客服">客服</a></span>
                                      </label>
 									  <a class="sui-btn btn-info share-btn">分享</a>
                                 </div>

@@ -68,6 +68,7 @@ app.controller("indexController",function ($scope,baseService) {
     $scope.findUserInfo = function () {
         baseService.sendGet("/user/findUserInfo").then(function (response) {
             $scope.userInfo = response.data;
+
         })
     };
    /* $scope.show =function (entity) {
