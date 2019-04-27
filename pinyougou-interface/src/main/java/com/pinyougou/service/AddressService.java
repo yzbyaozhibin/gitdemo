@@ -3,6 +3,8 @@ package com.pinyougou.service;
 import com.pinyougou.pojo.Address;
 import java.util.List;
 import java.io.Serializable;
+import java.util.Map;
+
 /**
  * AddressService 服务接口
  * @date 2019-03-28 15:42:09
@@ -31,7 +33,7 @@ public interface AddressService {
 	/** 多条件分页查询 */
 	List<Address> findByPage(Address address, int page, int rows);
 
-    List<Address> findByUserId(String userId);
+    List<Map<String,Object>> findByUserId(String userId);
 
 	void setDefaultAddress(Long id,String userId);
 }

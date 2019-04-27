@@ -25,7 +25,7 @@
 			<div class="py-container">
 				<div class="shortcut">
 					<ul class="fl">
-						<li class="f-item">{{username}}品优购欢迎您！&nbsp;<a
+						<li class="f-item">{{username}}&nbsp;品优购欢迎您！&nbsp;<a
 								href="http://sso.pinyougou.com/logout?service=http://cart.pinyougou.com/">退出</a></li>
 						<!--<li class="f-item">请<a href="login.html" target="_blank">登录</a>　<span>-->
 						<!--<a href="http://user.pinyougou.com/register.html">免费注册</a></span></li>-->
@@ -169,10 +169,10 @@ $(function(){
 
                     <div class="person-info">
                         <div class="person-photo"><img src="img/_/photo.png" alt=""></div>
-                        <div class="person-account">
-                            <span class="name">Michelle</span>
-                            <span class="safe">账户安全</span>
-                        </div>
+						<div class="person-account">
+							<span class="name">{{username}}</span>
+							<span class="safe"><a href="/logout">退出登录 </a></span>
+						</div>
                         <div class="clearfix"></div>
                     </div>
                     <div class="list-items">
@@ -205,7 +205,7 @@ $(function(){
                     <div class="body userAddress">
                         <div class="address-title">
                             <span class="title">地址管理</span>
-                            <a data-toggle="modal" data-target=".edit" data-keyboard="false"   class="sui-btn  btn-info add-new" ng-click="entity={};userInfo.address.province='';userInfo.address.city='';userInfo.address.area=''">添加新地址</a>
+                            <a data-toggle="modal" data-target=".edit" data-keyboard="false"   class="sui-btn  btn-info add-new" ng-click="entity={};">添加新地址</a>
                             <span class="clearfix"></span>
                         </div>
                         <div class="address-detail">
@@ -219,18 +219,18 @@ $(function(){
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="address in addressList">
-                                        <td>{{address.contact}}</td>
-                                        <td>{{address.address}}</td>
-                                        <td>{{address.mobile}}</td>
+                                    <tr ng-repeat="map in mapList">
+                                        <td>{{map.address.contact}}</td>
+                                        <td>{{map.provinceName}}&nbsp;{{map.cityName}}&nbsp;{{map.areaName}}&nbsp;{{map.address.address}}</td>
+                                        <td>{{map.address.mobile}}</td>
                                         <td>
-                                            <a data-toggle="modal" data-target=".edit" data-keyboard="false" ng-click="show(address)">编辑</a>
-                                            <a href="javascript:;" ng-click="deleteAddress(address.id)">删除</a>
-											<span ng-if="address.isDefault=='1'">
+                                            <a data-toggle="modal" data-target=".edit" data-keyboard="false" ng-click="show(map.address)">编辑</a>
+                                            <a href="javascript:;" ng-click="deleteAddress(map.address.id)">删除</a>
+											<span ng-if="map.address.isDefault=='1'">
 												默认地址
 											</span>
-											<span ng-if="address.isDefault !='1'">
-												<a href="javascript:;" ng-click="setDefaultAddress(address.id)">设为默认地址</a>
+											<span ng-if="map.address.isDefault !='1'">
+												<a href="javascript:;" ng-click="setDefaultAddress(map.address.id)">设为默认地址</a>
 											</span>
                                         </td>
                                     </tr>
@@ -259,17 +259,17 @@ $(function(){
                                             <div class="controls">
                                                 <div data-toggle="distpicker">
                                                 <div class="form-group area">
-                                                    <select class="form-control" id="province1" ng-change="getProvince(userInfo.address.province)" ng-model="userInfo.address.province" ng-options="p.provinceId as p.province for p in provinces ">
+                                                    <select class="form-control" id="province1"  ng-model="entity.provinceId" ng-options="p.provinceId as p.province for p in provinces ">
 														<option value="" selected="selected" >==省==</option>
 													</select>
                                                 </div>
                                                 <div class="form-group area">
-                                                    <select class="form-control" id="city1" ng-change="getCity(userInfo.address.city)" ng-model="userInfo.address.city" ng-options="c.cityId as c.city for c in cities ">
+                                                    <select class="form-control" id="city1" ng-model="entity.cityId" ng-options="c.cityId as c.city for c in cities ">
 														<option value="">==市==</option>
 													</select>
                                                 </div>
                                                 <div class="form-group area">
-                                                    <select class="form-control" id="district1" ng-change="getAreas(userInfo.address.area)" ng-model="userInfo.address.area" ng-options="a.areaId as a.area for a in areas ">
+                                                    <select class="form-control" id="district1" ng-model="entity.townId" ng-options="a.areaId as a.area for a in areas ">
 														<option value="">==区==</option>
 													</select>
                                                 </div>
@@ -305,7 +305,6 @@ $(function(){
 												<a href="javascript:;" class="sui-btn btn-default" ng-click="entity.alias='公司'">公司</a>
                                             </div>
                                         </div>
-                                        {{entity}}
                                         </form>
                                         
                                         

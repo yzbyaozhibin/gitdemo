@@ -3,39 +3,20 @@ app.controller("addressController",function ($scope,$controller,baseService) {
 
     $scope.getAddress=function () {
         baseService.sendGet("user/getAddress/").then(function (response) {
-            $scope.addressList=response.data;
+            $scope.mapList=response.data;
         })
     }
 
     $scope.show=function (entity) {
-        $scope.entity =JSON.parse(JSON.stringify(entity));
+         $scope.entity =entity;
+         $scope.entity[provinceId]=entity[provinceId];
+         $scope.entity[cityId]=entity[cityId];
+         $scope.entity[townId]=entity[townId];
+
     };
     $scope.entity={userId:"",provinceId:"",cityId:"",townId:"",mobile:"",address:"",contact:"",isDefault:"",notes:"",alias:""};
 
-    //查询省份名称
-    $scope.getProvince=function (id) {
-        baseService.sendGet("/user/getProvince?provinceId="+id).then(function (response) {
-            $scope.pr= response.data;
-        });
-    };
-    //查询市的名称
-    $scope.getCity=function (id) {
-        baseService.sendGet("/user/getCity?cityId="+id).then(function (response) {
-            $scope.ci= response.data;
-        })
-    }
-    //查询区域的名称
-
-    $scope.getAreas=function (id) {
-        baseService.sendGet("/user/getAreas?areaId="+id).then(function (response) {
-            $scope.ar=response.data;
-        })
-    }
     $scope.saveOrUpdate=function () {
-        $scope.entity.provinceId=$scope.pr;
-        $scope.entity.cityId=$scope.ci;
-        $scope.entity.townId=$scope.ar;
-        alert(JSON.stringify($scope.entity));
         var url = "saveAddress";
         if ($scope.entity.id) {
             url = "updateAddress";
@@ -71,6 +52,24 @@ app.controller("addressController",function ($scope,$controller,baseService) {
             }
         })
     }
+
+    $scope.$watch('entity.provinceId', function(newValue, oldValue){
+        if (newValue){
+            /** 根据选择的值查询二级分类 */
+            $scope.findCitiesByParentId(newValue, "cities");
+        }else{
+            $scope.cities = [];
+        }
+    });
+
+    $scope.$watch('entity.cityId', function(newValue, oldValue){
+        if (newValue){
+            /** 根据选择的值查询三级分类 */
+            $scope.findAreasByParentId(newValue, "areas");
+        }else{
+            $scope.areas = [];
+        }
+    });
 
 
 

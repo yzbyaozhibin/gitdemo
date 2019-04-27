@@ -34,7 +34,4 @@ public interface CitiesService {
 
 	List<Cities> findCitiesByParentId(String parentId);
 
-
-
-    String findCityName(String cityId);
 }
