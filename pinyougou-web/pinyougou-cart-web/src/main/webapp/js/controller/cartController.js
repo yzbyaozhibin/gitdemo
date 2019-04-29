@@ -30,7 +30,6 @@ app.controller("cartController", function ($scope, $controller, baseService) {
                         $scope.choseCart[i].orderItems.push(orderItem);
                         $scope.checkItemStatus[orderItem.itemId] = true;
                         if (cart.orderItems.length == $scope.choseCart[i].orderItems.length) {
-                            alert(1);
                             $scope.checkSellerStatus[cart.sellerId] = true;
                         }
                     }
@@ -50,12 +49,12 @@ app.controller("cartController", function ($scope, $controller, baseService) {
                     var orderItems = $scope.choseCart[i].orderItems;
                     for (var j = 0; j < orderItems.length; j++) {
                         if (orderItems[j].itemId == orderItem.itemId) {
-                            $scope.choseCart[i].orderItems.splice($scope.choseCart[i].orderItems.indexOf(orderItems[j]), 1);
+                            $scope.choseCart[i].orderItems.splice(j, 1);
                         }
                     }
                     $scope.checkItemStatus[orderItem.itemId] = false;
                     if (orderItems.length == 0) {
-                        $scope.choseCart.splice($scope.choseCart.indexOf($scope.choseCart[i]), 1);
+                        $scope.choseCart.splice(i, 1);
                     }
                 }
             }
@@ -102,8 +101,8 @@ app.controller("cartController", function ($scope, $controller, baseService) {
                         $scope.choseCart.push($scope.newCart);
                         $scope.updateOrderItemsByCart($scope.newCart.orderItems, true);
                         $scope.checkSellerStatus[cart.sellerId] = true;
-                        // $scope.checkItemStatus[cart.sellerId] = true;
                     } else {//未选中
+                        //有问题
                         $scope.choseCart.splice(i, 1);
                         $scope.updateOrderItemsByCart($scope.newCart.orderItems, false);
                         $scope.checkSellerStatus[cart.sellerId] = false;
