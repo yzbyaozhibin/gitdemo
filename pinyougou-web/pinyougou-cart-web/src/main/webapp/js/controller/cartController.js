@@ -98,13 +98,13 @@ app.controller("cartController", function ($scope, $controller, baseService) {
             for (var i = 0; i < $scope.choseCart.length; i++) {
                 if ($scope.choseCart[i].sellerId == cart.sellerId) {
                     if (event.target.checked) {//选中
-                        $scope.choseCart.splice($scope.choseCart.indexOf($scope.choseCart[i]), 1);
+                        $scope.choseCart.splice(i, 1);
                         $scope.choseCart.push($scope.newCart);
                         $scope.updateOrderItemsByCart($scope.newCart.orderItems, true);
                         $scope.checkSellerStatus[cart.sellerId] = true;
                         // $scope.checkItemStatus[cart.sellerId] = true;
                     } else {//未选中
-                        $scope.choseCart.splice($scope.choseCart.indexOf($scope.newCart), 1);
+                        $scope.choseCart.splice(i, 1);
                         $scope.updateOrderItemsByCart($scope.newCart.orderItems, false);
                         $scope.checkSellerStatus[cart.sellerId] = false;
                         $scope.checkAll = false;
