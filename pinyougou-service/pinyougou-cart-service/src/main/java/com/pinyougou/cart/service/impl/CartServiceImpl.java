@@ -119,9 +119,8 @@ public class CartServiceImpl implements CartService {
     @Override
     public void saveChoseCart(String userId,List<Cart> carts) {
         try {
+            //存储临时购物车
             redisTemplate.boundHashOps("tempCartList").put(userId, carts);
-            //设置过期时间
-            redisTemplate.expire("tempCartList",60, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -64,8 +64,9 @@
     </div>
     <!--All goods-->
     <div class="allgoods">
-        <!--商家状态:{{checkSellerStatus}}商品状态:{{checkItemStatus}}全部状态:{{checkAll}}-->
+        商家状态:{{checkSellerStatus}}商品状态:{{checkItemStatus}}全部状态:{{checkAll}}
         <h4>全部商品<span>&nbsp;共&nbsp;{{totalShop}}</span></h4>
+        {{choseCart}}
         <div class="cart-main">
             <div class="yui3-g cart-th">
                 <div class="yui3-u-1-4"><input type="checkbox" ng-checked="checkAll" ng-click="createAll($event)"/> 全部</div>

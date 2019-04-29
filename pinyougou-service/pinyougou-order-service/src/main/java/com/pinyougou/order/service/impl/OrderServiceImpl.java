@@ -52,31 +52,19 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Map<String, String> save(Order order, List<Cart> tempCartList) {
         try {
-//            //从内存中获取购物车
-//            List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps("cartList").get(order.getUserId());
             double totalFee = 0;
             String orderList = "";
             for (Cart cart : tempCartList) {
                 Order order1 = new Order();
                 order1.setOrderId(idWorker.nextId());
-                //            order1.setPayment(new BigDecimal("0"));
                 order1.setPaymentType(order.getPaymentType());
-                //            order1.setPostFee("");
                 order1.setStatus("1");
                 order1.setCreateTime(new Date());
                 order1.setUpdateTime(order1.getCreateTime());
-                //            order1.setPaymentTime(new Date());
-                //            order1.setConsignTime(new Date());
-                //            order1.setEndTime(new Date());
-                //            order1.setCloseTime(new Date());
-                //            order1.setShippingName("");
-                //            order1.setShippingCode("");
                 order1.setUserId(order.getUserId());
                 order1.setReceiverAreaName(order.getReceiverAreaName());
                 order1.setReceiverMobile(order.getReceiverMobile());
                 order1.setReceiver(order.getReceiver());
-                //            order1.setExpire(new Date().);
-                //            order1.setInvoiceType("");
                 order1.setSourceType("2");
                 order1.setSellerId(cart.getSellerId());
                 double money = 0;
@@ -139,7 +127,8 @@ public class OrderServiceImpl implements OrderService {
         List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps("cartList").get(userId);
         if (cartList != null && cartList.size() > 0) {
             //单个商家对应的一个购物车////
-            for (Cart cart : cartList) {
+            for (int j = 0; j < cartList.size(); j++) {
+                Cart cart = cartList.get(j);
                 for (Cart cart1 : tempCartList) {
                     //////////////////////
                     if (cart.getSellerId().equals(cart1.getSellerId())) {
